@@ -11,10 +11,12 @@ from app.rule_engine import adjust_sessions
 
 def test_nutrition_entry_added_to_db():
     db = InMemoryDB()
-    entry = NutritionEntry(id=0, date=date.today(), calories=2000, hydration_l=2.0)
+    entry = NutritionEntry(id=0, date=date.today(), calories=2000, hydration_l=2.0, carbs_g=250, protein_g=120, fat_g=70)
     stored = db.add_nutrition(entry)
     assert stored.id == 1
-    assert db.list_nutrition()[0].calories == 2000
+    saved = db.list_nutrition()[0]
+    assert saved.calories == 2000
+    assert saved.carbs_g == 250
 
 
 def test_adjust_sessions_with_injury():
