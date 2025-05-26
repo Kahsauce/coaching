@@ -8,6 +8,8 @@ import {
 } from 'react-router-dom';
 
 import { API_URL } from './api';
+import { Line } from 'react-chartjs-2';
+import 'chart.js/auto';
 
 function Dashboard() {
   const [todaySessions, setTodaySessions] = useState([]);
@@ -176,6 +178,38 @@ function Progress() {
   );
 }
 
+function Stats() {
+  const [summary, setSummary] = useState(null);
+
+  useEffect(() => {
+    fetch(`${API_URL}/stats/summary`).then((res) => res.json()).then(setSummary);
+  }, []);
+
+  if (!summary) return <p>Chargement...</p>;
+
+  const data = {
+    labels: ['Semaine -3', 'Semaine -2', 'Semaine -1', 'Semaine'],
+    datasets: [
+      {
+        label: 'Charge',
+        data: summary.weekly_loads,
+        backgroundColor: 'rgba(75,192,192,0.4)',
+        borderColor: 'rgba(75,192,192,1)',
+        borderWidth: 1,
+      },
+    ],
+  };
+
+  return (
+    <div>
+      <h1>Statistiques</h1>
+      <Line data={data} />
+      <p>ACWR : {summary.acwr.toFixed(2)}</p>
+      <p>Progression : {summary.progression.toFixed(1)}%</p>
+    </div>
+  );
+}
+
 function Competitions() {
   const [comps, setComps] = useState([]);
   const [date, setDate] = useState('');
@@ -227,7 +261,8 @@ function App() {
         <Link to="/add-nutrition">Nutrition</Link> |{' '}
         <Link to="/add-injury">Blessure</Link> |{' '}
         <Link to="/competitions">Compétitions</Link> |{' '}
-        <Link to="/progress">Progression</Link>
+        <Link to="/progress">Progression</Link> |{' '}
+        <Link to="/stats">Statistiques</Link>
       </nav>
       <Routes>
         <Route path="/" element={<Dashboard />} />
@@ -237,6 +272,7 @@ function App() {
         <Route path="/add-injury" element={<AddInjury />} />
         <Route path="/competitions" element={<Competitions />} />
         <Route path="/progress" element={<Progress />} />
+        <Route path="/stats" element={<Stats />} />
       </Routes>
     </Router>
   );
