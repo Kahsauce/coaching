@@ -1,0 +1,17 @@
+// Prisma schema
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-py"
+}
+
+model Session {
+  id          Int      @id @default(autoincrement())
+  date        DateTime
+  sport       String
+  durationMin Int
+  rpe         Int
+}

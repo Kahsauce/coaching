@@ -3,7 +3,7 @@ from datetime import date, timedelta
 import os
 import sys
 
-sys.path.append(os.path.abspath("backend"))
+sys.path.append(os.path.abspath("packages/api"))
 
 from app.acwr import compute_acwr
 from app.models import TrainingSession
