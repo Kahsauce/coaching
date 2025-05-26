@@ -1,4 +1,5 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from typing import List, Optional
 from datetime import date, timedelta
 
@@ -12,6 +13,12 @@ from .models import TrainingSession, NutritionEntry, Injury, Competition
 from .database import DB
 
 app = FastAPI(title="Coaching App")
+
+
+@app.get("/", include_in_schema=False)
+def root_redirect():
+    """Redirect to the interactive API documentation."""
+    return RedirectResponse(url="/docs")
 
 @app.get("/health")
 def health_check():
