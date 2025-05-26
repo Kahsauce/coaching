@@ -1,4 +1,8 @@
+"""Mini implémentation de Pydantic pour les tests hors ligne."""
+
 from typing import Any, Dict, Tuple, Type
+
+from .version import VERSION
 
 class BaseModel:
     def __init__(self, **data: Any):
@@ -11,6 +15,27 @@ class BaseModel:
 
     def dict(self):
         return self.__dict__
+
+
+class BaseSettings(BaseModel):
+    """Placeholder de ``BaseSettings`` compatible avec Pydantic."""
+
+    pass
+
+
+class AnyUrl(str):
+    """Type de chaîne représentant une URL quelconque."""
+
+    pass
+
+
+class HttpUrl(AnyUrl):
+    """Alias simple pour ``AnyUrl``."""
+
+    pass
+
+
+AnyHttpUrl = HttpUrl
 
 
 def Field(default: Any, **kwargs) -> Any:
