@@ -10,6 +10,16 @@ La structure principale est la suivante :
 - `apps/mobile` : première version mobile réalisée avec React Native
 - `packages/api` : backend FastAPI
 
+## Démarrage rapide
+
+```bash
+pip install -r packages/api/requirements.txt
+cd packages/api
+uvicorn app.main:app --reload
+```
+
+La liste complète des endpoints est présentée dans [docs/api.md](docs/api.md).
+
 ## Backend
 - Python / FastAPI
 - Endpoints principaux :
@@ -39,7 +49,8 @@ cahier des charges.
 
 `pytest` doit être installé (voir `packages/api/requirements.txt`). Les entrées
 de nutrition permettent désormais de renseigner les macronutriments (glucides,
-protéines, lipides).
+protéines, lipides). Une action GitHub exécute automatiquement ces tests à
+chaque pull request.
 
 ```
 pip install -r packages/api/requirements.txt
@@ -50,5 +61,5 @@ pytest --cov=packages/api/app --cov-report=term-missing
 
 Les étapes détaillées pour transformer ce prototype en application complète
 sont décrites dans [PLAN.md](PLAN.md).
-Des compléments, dont l'analyse du PDF et les personas, sont disponibles dans le répertoire [docs](docs).
+Des compléments, dont l'analyse du PDF, les personas et la documentation détaillée de l'API, sont disponibles dans le répertoire [docs](docs).
 La liste des tâches en cours figure dans [TODO.md](TODO.md).
