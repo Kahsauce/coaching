@@ -5,7 +5,7 @@ from datetime import date
 from .acwr import compute_acwr
 from .rule_engine import adjust_sessions
 
-from .models import TrainingSession
+from .models import TrainingSession, NutritionEntry, Injury
 from .db import DB
 
 app = FastAPI(title="Coaching App")
@@ -35,6 +35,26 @@ def update_session(session_id: int, session: TrainingSession):
     return DB.update_session(session_id, session)
 
 
+@app.get("/nutrition", response_model=List[NutritionEntry])
+def list_nutrition():
+    return DB.list_nutrition()
+
+
+@app.post("/nutrition", response_model=NutritionEntry)
+def add_nutrition(entry: NutritionEntry):
+    return DB.add_nutrition(entry)
+
+
+@app.get("/injuries", response_model=List[Injury])
+def list_injuries():
+    return DB.list_injuries()
+
+
+@app.post("/injuries", response_model=Injury)
+def add_injury(injury: Injury):
+    return DB.add_injury(injury)
+
+
 @app.post("/workouts/order", response_model=List[TrainingSession])
 def reorder_sessions(order: List[int]):
     """Reorder sessions according to given list of ids."""
@@ -45,7 +65,8 @@ def reorder_sessions(order: List[int]):
 def plan_adjust():
     """Apply rule engine to adapt upcoming sessions."""
     sessions = DB.list_sessions()
-    adjusted = adjust_sessions(sessions)
+    injuries = DB.list_injuries()
+    adjusted = adjust_sessions(sessions, injuries=injuries)
     # sessions are modified in place, update DB entries
     for s in adjusted:
         DB.update_session(s.id, s)
