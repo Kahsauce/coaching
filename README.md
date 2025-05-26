@@ -1,14 +1,24 @@
 # Coaching App
 
-Ce dépôt contient une ébauche d'application de suivi sportif destinée à un athlète vétéran multisports. Elle se compose d'un backend FastAPI minimal et d'un frontend React très léger.
+Cette application fournit une base pour un outil de suivi sportif. Elle s'adresse
+à un athlète vétéran multisports et se compose d'un backend FastAPI et d'un
+frontend React simple.
 
 ## Backend
 - Python / FastAPI
-- Point d'entrée dans `backend/app/main.py`
-- Dépendances listées dans `backend/requirements.txt`
+- Endpoints principaux :
+  - `GET /health` : vérifie que l'API fonctionne.
+  - `GET /sessions` : liste des séances enregistrées.
+  - `POST /sessions` : enregistre une nouvelle séance.
+  - `GET /sessions/today` : renvoie les séances prévues pour aujourd'hui.
+  - `PUT /sessions/{id}` : met à jour une séance.
+- Les modèles sont définis dans `backend/app/models.py` et les données sont
+  stockées dans une base en mémoire (`backend/app/db.py`).
 
 ## Frontend
 - React (structure minimaliste)
 - Fichiers dans le répertoire `frontend`
 
-Ce projet est pour l'instant une simple structure de départ.
+Ce projet est volontairement simple et sert de point de départ pour
+étendre l'application vers les nombreuses fonctionnalités décrites dans le
+cahier des charges.
