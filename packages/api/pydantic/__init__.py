@@ -1,4 +1,21 @@
+"""Mini implémentation de Pydantic pour les tests hors ligne."""
+
 from typing import Any, Dict, Tuple, Type
+
+# Expose VERSION constant used by FastAPI for compatibility checks
+from .version import VERSION
+
+__all__ = [
+    "BaseModel",
+    "BaseSettings",
+    "BaseConfig",
+    "Field",
+    "create_model",
+    "AnyUrl",
+    "HttpUrl",
+    "AnyHttpUrl",
+    "VERSION",
+]
 
 class BaseModel:
     def __init__(self, **data: Any):
@@ -11,6 +28,28 @@ class BaseModel:
 
     def dict(self):
         return self.__dict__
+
+
+class BaseConfig:
+    """Minimal configuration container used by FastAPI."""
+    pass
+
+
+class BaseSettings(BaseModel):
+    """Stub of Pydantic's BaseSettings."""
+    Config = BaseConfig
+
+
+class AnyUrl(str):
+    pass
+
+
+class HttpUrl(str):
+    pass
+
+
+class AnyHttpUrl(str):
+    pass
 
 
 def Field(default: Any, **kwargs) -> Any:
