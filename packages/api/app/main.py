@@ -4,6 +4,8 @@ from datetime import date, timedelta
 
 from .acwr import compute_acwr
 from .rule_engine import adjust_sessions
+from .stats import stats_summary
+from .nutrition import calculate_plan, NutritionPlanRequest
 
 from .models import TrainingSession, NutritionEntry, Injury
 from .db import DB
@@ -85,3 +87,16 @@ def get_acwr():
     """Return the current ACWR metric."""
     ratio = compute_acwr(DB.list_sessions())
     return {"acwr": ratio}
+
+
+@app.get("/stats/summary")
+def get_stats_summary():
+    """Return ACWR, weekly loads and progression."""
+    sessions = DB.list_sessions()
+    return stats_summary(sessions)
+
+
+@app.post("/nutrition/plan")
+def get_nutrition_plan(req: NutritionPlanRequest):
+    """Return a basic nutrition plan from body weight and goal."""
+    return calculate_plan(req.body_weight_kg, req.goal)

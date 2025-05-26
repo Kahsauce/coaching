@@ -19,6 +19,9 @@ class NutritionEntry(BaseModel):
     date: date
     calories: int = Field(0, ge=0)
     hydration_l: float = Field(0.0, ge=0.0)
+    carbs_g: int = Field(0, ge=0)
+    protein_g: int = Field(0, ge=0)
+    fat_g: int = Field(0, ge=0)
 
 
 class Injury(BaseModel):

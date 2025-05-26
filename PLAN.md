@@ -12,8 +12,8 @@ Cette application doit évoluer vers une plateforme complète de suivi sportif (
 - [x] **Gestion des blessures et adaptations automatiques**.
 - [x] **Dashboard Aujourd'hui** (web & mobile).
 - [x] **Calendrier hebdomadaire interactif**.
-- [ ] **Statistiques ACWR, charge, progression**.
-- [ ] **Plan nutrition détaillé**.
+- [x] **Statistiques ACWR, charge, progression**.
+- [x] **Plan nutrition détaillé**.
 - [ ] **Gestion des compétitions et recalcul du plan**.
 - [ ] **Tests unitaires et e2e (couverture >80%)**.
 - [ ] **Déploiement Docker + CI/CD et documentation complète**.

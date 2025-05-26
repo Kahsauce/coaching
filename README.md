@@ -20,6 +20,8 @@ La structure principale est la suivante :
 - `GET /sessions/week` : renvoie les séances de la semaine en cours.
 - `PUT /sessions/{id}` : met à jour une séance.
 - `GET /stats/acwr` : calcule le ratio de charge d'entraînement (ACWR).
+- `GET /stats/summary` : ACWR, charges hebdo et progression.
+- `POST /nutrition/plan` : génère un plan nutrition basé sur le poids et l'objectif.
 - Les modèles sont définis dans `packages/api/app/models.py` et les données sont
   stockées dans une base en mémoire (`packages/api/app/db.py`).
 
@@ -34,7 +36,9 @@ cahier des charges.
 
 ## Tests
 
-`pytest` doit être installé (voir `packages/api/requirements.txt`).
+`pytest` doit être installé (voir `packages/api/requirements.txt`). Les entrées
+de nutrition permettent désormais de renseigner les macronutriments (glucides,
+protéines, lipides).
 
 ```
 pip install -r packages/api/requirements.txt
