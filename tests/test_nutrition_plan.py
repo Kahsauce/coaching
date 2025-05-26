@@ -13,3 +13,4 @@ def test_calculate_plan_fields():
     assert plan.protein_g > 0
     assert plan.carbs_g > 0
     assert plan.fat_g > 0
+    assert plan.hydration_l > 0

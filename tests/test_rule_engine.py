@@ -19,3 +19,12 @@ def test_adjust_sessions_reduces_load_when_acwr_high():
     sessions = [past, upcoming]
     adjusted = adjust_sessions(sessions, today=date.today())
     assert adjusted[1].duration_min < 60
+
+
+def test_adjust_sessions_increases_load_when_acwr_low():
+    """Si le ratio ACWR est trop bas, la durée doit augmenter."""
+    past = TrainingSession(id=1, date=date.today() - timedelta(days=28), sport="run", duration_min=30, rpe=5)
+    upcoming = make_session(1, 60)
+    sessions = [past, upcoming]
+    adjusted = adjust_sessions(sessions, today=date.today())
+    assert adjusted[1].duration_min > 60
