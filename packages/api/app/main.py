@@ -95,7 +95,15 @@ def list_competitions():
 
 @app.post("/competitions", response_model=Competition)
 def add_competition(comp: Competition):
-    return DB.add_competition(comp)
+    stored = DB.add_competition(comp)
+    # Recalculer immédiatement les séances autour de la compétition
+    sessions = DB.list_sessions()
+    injuries = DB.list_injuries()
+    competitions = DB.list_competitions()
+    adjusted = adjust_sessions(sessions, injuries=injuries, competitions=competitions)
+    for s in adjusted:
+        DB.update_session(s.id, s)
+    return stored
 
 
 @app.post("/workouts/order", response_model=List[TrainingSession])

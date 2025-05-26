@@ -8,7 +8,7 @@ Cette liste reprend les actions nécessaires pour rendre l'application pleinemen
 - [x] **Module nutrition avancé** : calculer les apports en glucides, protéines, lipides et suivre l'hydratation.
 - [x] **Prise en charge des blessures** *(en cours)* : enregistrer les blessures, appliquer la méthode RICE puis programmer la reprise progressive.
 - [x] **Synchronisation front‑end / back‑end** *(en cours)* : connecter l'application mobile et le tableau de bord web à l'API.
-- [ ] **Interface utilisateur enrichie** : écrans de saisie des séances, de la nutrition et des blessures. Suivi visuel de la progression.
-- [ ] **Gestion des compétitions** : planifier les compétitions et ajuster automatiquement les séances autour des dates clés.
+- [x] **Interface utilisateur enrichie** : écrans de saisie des séances, de la nutrition et des blessures. Suivi visuel de la progression.
+- [x] **Gestion des compétitions** : planifier les compétitions et ajuster automatiquement les séances autour des dates clés.
 - [ ] **Couverture de tests et CI/CD** : étendre les tests unitaires et mettre en place une intégration continue.
 - [ ] **Documentation et aide utilisateur** : documenter toutes les API et fournir un guide rapide.
