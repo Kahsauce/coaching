@@ -67,6 +67,11 @@ class InMemoryDB:
     def list_injuries(self) -> List[Injury]:
         return list(self._injuries.values())
 
+    def update_injury(self, injury_id: int, injury: Injury) -> Injury:
+        self._injuries[injury_id] = injury
+        injury.id = injury_id
+        return injury
+
     # Competitions
     def add_competition(self, comp: Competition) -> Competition:
         comp.id = self._competition_counter

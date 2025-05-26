@@ -212,6 +212,25 @@ class SQLiteDB:
             for row in rows
         ]
 
+    def update_injury(self, injury_id: int, injury: Injury) -> Injury:
+        cur = self.conn.cursor()
+        cur.execute(
+            """
+            UPDATE injuries
+            SET start_date=?, end_date=?, description=?
+            WHERE id=?
+            """,
+            (
+                injury.start_date.isoformat(),
+                injury.end_date.isoformat() if injury.end_date else None,
+                injury.description,
+                injury_id,
+            ),
+        )
+        self.conn.commit()
+        injury.id = injury_id
+        return injury
+
     def add_competition(self, comp: Competition) -> Competition:
         cur = self.conn.cursor()
         cur.execute(

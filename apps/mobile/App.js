@@ -1,12 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { API_URL } from './api';
 
 export default function App() {
   const [sessions, setSessions] = useState([]);
 
   useEffect(() => {
-    fetch('http://localhost:8000/sessions/today')
+    fetch(`${API_URL}/sessions/today`)
       .then((res) => res.json())
       .then((data) => setSessions(data));
   }, []);

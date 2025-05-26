@@ -59,3 +59,11 @@ def test_sqlite_other_tables():
     comp = db.add_competition(Competition(id=0, date=date.today(), name="10k"))
     assert comp.id > 0
     assert len(db.list_competitions()) == 1
+
+
+def test_update_injury_sqlite():
+    db = SQLiteDB(path=":memory:")
+    injury = db.add_injury(Injury(id=0, start_date=date.today()))
+    injury.end_date = date.today()
+    updated = db.update_injury(injury.id, injury)
+    assert updated.end_date == date.today()
