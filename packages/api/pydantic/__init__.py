@@ -1,3 +1,5 @@
+"""Mini implémentation de Pydantic pour les tests hors ligne."""
+
 from typing import Any, Dict, Tuple, Type
 
 class BaseModel:
