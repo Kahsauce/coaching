@@ -3,6 +3,7 @@ from typing import List
 from datetime import date
 
 from .acwr import compute_acwr
+from .rule_engine import adjust_sessions
 
 from .models import TrainingSession
 from .db import DB
@@ -32,6 +33,23 @@ def update_session(session_id: int, session: TrainingSession):
         raise HTTPException(status_code=404, detail="Session not found")
     session.id = session_id
     return DB.update_session(session_id, session)
+
+
+@app.post("/workouts/order", response_model=List[TrainingSession])
+def reorder_sessions(order: List[int]):
+    """Reorder sessions according to given list of ids."""
+    return DB.reorder_sessions(order)
+
+
+@app.post("/plan/adjust", response_model=List[TrainingSession])
+def plan_adjust():
+    """Apply rule engine to adapt upcoming sessions."""
+    sessions = DB.list_sessions()
+    adjusted = adjust_sessions(sessions)
+    # sessions are modified in place, update DB entries
+    for s in adjusted:
+        DB.update_session(s.id, s)
+    return adjusted
 
 
 @app.get("/stats/acwr")
