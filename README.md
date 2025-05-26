@@ -1,8 +1,14 @@
 # Coaching App
 
 Cette application fournit une base pour un outil de suivi sportif. Elle s'adresse
-à un athlète vétéran multisports et se compose d'un backend FastAPI et d'un
-frontend React simple.
+à un athlète vétéran multisports et est désormais organisée en **monorepo** grâce à
+Turborepo.
+
+La structure principale est la suivante :
+
+- `apps/web` : frontend React
+- `apps/mobile` : application mobile (placeholder)
+- `packages/api` : backend FastAPI
 
 ## Backend
 - Python / FastAPI
@@ -13,12 +19,12 @@ frontend React simple.
 - `GET /sessions/today` : renvoie les séances prévues pour aujourd'hui.
 - `PUT /sessions/{id}` : met à jour une séance.
 - `GET /stats/acwr` : calcule le ratio de charge d'entraînement (ACWR).
-- Les modèles sont définis dans `backend/app/models.py` et les données sont
-  stockées dans une base en mémoire (`backend/app/db.py`).
+- Les modèles sont définis dans `packages/api/app/models.py` et les données sont
+  stockées dans une base en mémoire (`packages/api/app/db.py`).
 
 ## Frontend
 - React (structure minimaliste)
-- Fichiers dans le répertoire `frontend`
+- Fichiers dans le répertoire `apps/web`
 
 Ce projet est volontairement simple et sert de point de départ pour
 étendre l'application vers les nombreuses fonctionnalités décrites dans le
@@ -26,10 +32,10 @@ cahier des charges.
 
 ## Tests
 
-`pytest` doit être installé (voir `backend/requirements.txt`).
+`pytest` doit être installé (voir `packages/api/requirements.txt`).
 
 ```
-pip install -r backend/requirements.txt
+pip install -r packages/api/requirements.txt
 pytest
 ```
 

@@ -4,8 +4,8 @@ Cette application doit évoluer vers une plateforme complète de suivi sportif (
 
 - [x] **Analyse du PDF** : extraire les modèles de périodisation, les règles ACWR, nutrition et blessures.
 - [x] **Atelier UX & personas** : définir les parcours utilisateurs, wireframes mobile first.
-- [ ] **Mise en place du monorepo (Turborepo)** : structure `apps/web`, `apps/mobile` et `packages/api`.
-- [ ] **Conception de la base de données avec Prisma**.
+- [x] **Mise en place du monorepo (Turborepo)** : structure `apps/web`, `apps/mobile` et `packages/api`.
+- [x] **Conception de la base de données avec Prisma**.
 - [ ] **Implémentation d'un moteur de règles pour planifier et adapter les séances**.
 - [ ] **API workouts (tRPC/GraphQL)** avec drag-and-drop et replanification.
 - [ ] **Module nutrition et hydratation**.
