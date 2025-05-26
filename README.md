@@ -37,3 +37,4 @@ pytest
 
 Les étapes détaillées pour transformer ce prototype en application complète
 sont décrites dans [PLAN.md](PLAN.md).
+Des compléments, dont l'analyse du PDF et les personas, sont disponibles dans le répertoire [docs](docs).
