@@ -13,9 +13,8 @@ La structure principale est la suivante :
 ## Démarrage rapide
 
 ```bash
-pip install -r packages/api/requirements.txt
 cd packages/api
-uvicorn app.main:app --reload
+./start.sh
 ```
 
 La liste complète des endpoints est présentée dans [docs/api.md](docs/api.md).
