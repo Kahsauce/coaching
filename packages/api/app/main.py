@@ -62,7 +62,15 @@ def list_injuries():
 
 @app.post("/injuries", response_model=Injury)
 def add_injury(injury: Injury):
-    return DB.add_injury(injury)
+    stored = DB.add_injury(injury)
+    # Mise à jour immédiate du plan d'entraînement
+    sessions = DB.list_sessions()
+    injuries = DB.list_injuries()
+    competitions = DB.list_competitions()
+    adjusted = adjust_sessions(sessions, injuries=injuries, competitions=competitions)
+    for s in adjusted:
+        DB.update_session(s.id, s)
+    return stored
 
 
 @app.get("/competitions", response_model=List[Competition])

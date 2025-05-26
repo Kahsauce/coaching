@@ -33,7 +33,19 @@ def adjust_sessions(
             end = injury.end_date or date.max
             for s in sessions:
                 if injury.start_date <= s.date <= end and not s.completed:
-                    s.duration_min = int(s.duration_min * 0.5)
+                    days_since_start = (s.date - injury.start_date).days
+                    if days_since_start < 3:
+                        s.description = "Repos - RICE"
+                        s.duration_min = 0
+                    else:
+                        s.duration_min = int(s.duration_min * 0.5)
+                # reprise progressive apres la blessure
+                if injury.end_date and s.date > injury.end_date and not s.completed:
+                    days_after = (s.date - injury.end_date).days
+                    if days_after <= 6:
+                        s.duration_min = int(s.duration_min * 0.75)
+                    elif days_after <= 13:
+                        s.duration_min = int(s.duration_min * 0.9)
 
     if competitions:
         for comp in competitions:

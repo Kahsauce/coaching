@@ -7,11 +7,13 @@ import {
   Link,
 } from 'react-router-dom';
 
+const API = 'http://localhost:8000';
+
 function Dashboard() {
   const [todaySessions, setTodaySessions] = useState([]);
 
   useEffect(() => {
-    fetch('/sessions/today')
+    fetch(`${API}/sessions/today`)
       .then((res) => res.json())
       .then((data) => setTodaySessions(data));
   }, []);
@@ -34,7 +36,7 @@ function Calendar() {
   const [weekSessions, setWeekSessions] = useState([]);
 
   useEffect(() => {
-    fetch('/sessions/week')
+    fetch(`${API}/sessions/week`)
       .then((res) => res.json())
       .then((data) => setWeekSessions(data));
   }, []);
