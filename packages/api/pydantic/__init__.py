@@ -2,7 +2,20 @@
 
 from typing import Any, Dict, Tuple, Type
 
+# Expose VERSION constant used by FastAPI for compatibility checks
 from .version import VERSION
+
+__all__ = [
+    "BaseModel",
+    "BaseSettings",
+    "BaseConfig",
+    "Field",
+    "create_model",
+    "AnyUrl",
+    "HttpUrl",
+    "AnyHttpUrl",
+    "VERSION",
+]
 
 class BaseModel:
     def __init__(self, **data: Any):
@@ -17,10 +30,16 @@ class BaseModel:
         return self.__dict__
 
 
-class BaseSettings(BaseModel):
-    """Placeholder de ``BaseSettings`` compatible avec Pydantic."""
+class BaseConfig:
+    """Minimal configuration container used by FastAPI."""
 
     pass
+
+
+class BaseSettings(BaseModel):
+    """Stub of Pydantic's BaseSettings."""
+
+    Config = BaseConfig
 
 
 class AnyUrl(str):
