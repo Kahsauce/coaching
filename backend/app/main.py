@@ -2,6 +2,8 @@ from fastapi import FastAPI, HTTPException
 from typing import List
 from datetime import date
 
+from .acwr import compute_acwr
+
 from .models import TrainingSession
 from .db import DB
 
@@ -30,3 +32,10 @@ def update_session(session_id: int, session: TrainingSession):
         raise HTTPException(status_code=404, detail="Session not found")
     session.id = session_id
     return DB.update_session(session_id, session)
+
+
+@app.get("/stats/acwr")
+def get_acwr():
+    """Return the current ACWR metric."""
+    ratio = compute_acwr(DB.list_sessions())
+    return {"acwr": ratio}
