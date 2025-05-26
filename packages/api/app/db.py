@@ -1,19 +1,21 @@
-from typing import Dict
+from typing import Dict, List
 from .models import TrainingSession
 
 class InMemoryDB:
     def __init__(self):
         self._sessions: Dict[int, TrainingSession] = {}
+        self._order: List[int] = []
         self._counter = 1
 
     def add_session(self, session: TrainingSession) -> TrainingSession:
         session.id = self._counter
         self._counter += 1
         self._sessions[session.id] = session
+        self._order.append(session.id)
         return session
 
     def list_sessions(self):
-        return list(self._sessions.values())
+        return [self._sessions[sid] for sid in self._order]
 
     def get_session(self, session_id: int) -> TrainingSession:
         return self._sessions.get(session_id)
@@ -21,5 +23,9 @@ class InMemoryDB:
     def update_session(self, session_id: int, session: TrainingSession) -> TrainingSession:
         self._sessions[session_id] = session
         return session
+
+    def reorder_sessions(self, new_order: List[int]) -> List[TrainingSession]:
+        self._order = [sid for sid in new_order if sid in self._sessions]
+        return self.list_sessions()
 
 DB = InMemoryDB()
