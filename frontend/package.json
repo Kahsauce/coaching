@@ -1,0 +1,12 @@
+{
+  "name": "coaching-frontend",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "echo 'TODO: start frontend'"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
