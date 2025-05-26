@@ -1,15 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import ReactDOM from 'react-dom/client';
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  Link,
-} from 'react-router-dom';
-
-import { API_URL } from './api';
-import { Line } from 'react-chartjs-2';
-import 'chart.js/auto';
+const { useEffect, useState } = React;
+const { BrowserRouter: Router, Routes, Route, Link } = ReactRouterDOM;
+const { Line } = ReactChartjs2;
+const API_URL = window.API_URL || 'http://localhost:8000';
 
 function Dashboard() {
   const [todaySessions, setTodaySessions] = useState([]);
