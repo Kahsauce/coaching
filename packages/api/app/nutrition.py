@@ -1,4 +1,8 @@
+from datetime import date, timedelta
+from typing import List
+
 from pydantic import BaseModel
+from .models import NutritionEntry
 
 class NutritionPlanRequest(BaseModel):
     body_weight_kg: float
@@ -34,3 +38,16 @@ def calculate_plan(body_weight_kg: float, goal: str = "maintain") -> NutritionPl
         carbs_g=carbs,
         hydration_l=hydration_l,
     )
+
+
+def average_hydration(
+    entries: List[NutritionEntry], days: int = 7, today: date | None = None
+) -> float:
+    """Retourne l'hydratation moyenne (en litres) sur les *days* derniers jours."""
+    if today is None:
+        today = date.today()
+    start = today - timedelta(days=days - 1)
+    values = [e.hydration_l for e in entries if start <= e.date <= today]
+    if not values:
+        return 0.0
+    return round(sum(values) / len(values), 2)

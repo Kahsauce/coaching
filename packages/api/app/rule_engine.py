@@ -18,15 +18,26 @@ def adjust_sessions(
         today = date.today()
 
     if ratio > 1.5:
-        # Réduire la charge des séances à venir pour limiter le risque de blessure
+        # Réduire la charge et l'intensité pour limiter le risque de blessure
         for s in sessions:
             if not s.completed and s.date >= today:
                 s.duration_min = int(s.duration_min * 0.8)
+                if s.rpe is not None:
+                    s.rpe = max(1, s.rpe - 2)
+    elif ratio < 0.5:
+        # Ratio très bas : augmenter franchement la charge et l'intensité
+        for s in sessions:
+            if not s.completed and s.date >= today:
+                s.duration_min = int(s.duration_min * 1.2)
+                if s.rpe is not None:
+                    s.rpe = min(10, s.rpe + 1)
     elif ratio < 0.8:
         # Augmenter légèrement la charge pour éviter un sous-entraînement
         for s in sessions:
             if not s.completed and s.date >= today:
                 s.duration_min = int(s.duration_min * 1.1)
+                if s.rpe is not None:
+                    s.rpe = min(10, s.rpe + 1)
 
     if injuries:
         for injury in injuries:
