@@ -13,9 +13,11 @@ La structure principale est la suivante :
 ## Démarrage rapide
 
 ```bash
-cd packages/api
 ./start.sh
 ```
+
+Le script démarre l'API et l'interface web. Le frontend est ensuite
+accessible sur `http://localhost:3000`.
 
 La liste complète des endpoints est présentée dans [docs/api.md](docs/api.md).
 
