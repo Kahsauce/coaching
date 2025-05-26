@@ -7,7 +7,8 @@ sur quatre semaines suivies d'une semaine allégée.
 Ce fichier prépare l'implémentation du point 2 de TODO.md.
 """
 
-from dataclasses import dataclass, field
+from pydantic.dataclasses import dataclass
+from dataclasses import field
 from datetime import date, timedelta
 from typing import List
 
