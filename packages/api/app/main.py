@@ -1,6 +1,6 @@
 from fastapi import FastAPI, HTTPException
-from typing import List
-from datetime import date
+from typing import List, Optional
+from datetime import date, timedelta
 
 from .acwr import compute_acwr
 from .rule_engine import adjust_sessions
@@ -26,6 +26,13 @@ def create_session(session: TrainingSession):
 def sessions_today():
     today = date.today()
     return [s for s in DB.list_sessions() if s.date == today]
+
+
+@app.get("/sessions/week", response_model=List[TrainingSession])
+def sessions_week(start: Optional[date] = None):
+    start_date = start or date.today()
+    monday = start_date - timedelta(days=start_date.weekday())
+    return DB.sessions_for_week(monday)
 
 @app.put("/sessions/{session_id}", response_model=TrainingSession)
 def update_session(session_id: int, session: TrainingSession):

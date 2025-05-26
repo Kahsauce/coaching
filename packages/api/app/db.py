@@ -1,5 +1,6 @@
 from typing import Dict, List
 from .models import TrainingSession, NutritionEntry, Injury
+from datetime import date, timedelta
 
 class InMemoryDB:
     def __init__(self):
@@ -31,6 +32,10 @@ class InMemoryDB:
     def reorder_sessions(self, new_order: List[int]) -> List[TrainingSession]:
         self._order = [sid for sid in new_order if sid in self._sessions]
         return self.list_sessions()
+
+    def sessions_for_week(self, start: date) -> List[TrainingSession]:
+        end = start + timedelta(days=6)
+        return [s for s in self.list_sessions() if start <= s.date <= end]
 
     # Nutrition entries
     def add_nutrition(self, entry: NutritionEntry) -> NutritionEntry:

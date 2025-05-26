@@ -17,6 +17,7 @@ La structure principale est la suivante :
 - `GET /sessions` : liste des séances enregistrées.
 - `POST /sessions` : enregistre une nouvelle séance.
 - `GET /sessions/today` : renvoie les séances prévues pour aujourd'hui.
+- `GET /sessions/week` : renvoie les séances de la semaine en cours.
 - `PUT /sessions/{id}` : met à jour une séance.
 - `GET /stats/acwr` : calcule le ratio de charge d'entraînement (ACWR).
 - Les modèles sont définis dans `packages/api/app/models.py` et les données sont
@@ -25,6 +26,7 @@ La structure principale est la suivante :
 ## Frontend
 - React (structure minimaliste)
 - Fichiers dans le répertoire `apps/web`
+- Pages disponibles : tableau de bord "Aujourd'hui" et calendrier hebdomadaire.
 
 Ce projet est volontairement simple et sert de point de départ pour
 étendre l'application vers les nombreuses fonctionnalités décrites dans le
