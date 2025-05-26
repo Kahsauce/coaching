@@ -2,6 +2,15 @@ from typing import Dict, List
 from .models import TrainingSession, NutritionEntry, Injury, Competition
 from datetime import date, timedelta
 
+"""Persistance des données.
+
+Cette implémentation en mémoire sert uniquement de prototype. Pour rendre
+l'application opérationnelle (voir point 1 du fichier TODO.md), il faudra la
+remplacer par une base de données réelle, par exemple PostgreSQL via Prisma ou
+SQLAlchemy. Toutes les méthodes devront alors effectuer les requêtes nécessaires
+et gérer les migrations.
+"""
+
 class InMemoryDB:
     def __init__(self):
         self._sessions: Dict[int, TrainingSession] = {}
