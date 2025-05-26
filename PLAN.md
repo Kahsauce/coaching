@@ -10,8 +10,8 @@ Cette application doit évoluer vers une plateforme complète de suivi sportif (
 - [x] **API workouts (tRPC/GraphQL)** avec drag-and-drop et replanification.
 - [x] **Module nutrition et hydratation**.
 - [x] **Gestion des blessures et adaptations automatiques**.
-- [ ] **Dashboard Aujourd'hui** (web & mobile).
-- [ ] **Calendrier hebdomadaire interactif**.
+- [x] **Dashboard Aujourd'hui** (web & mobile).
+- [x] **Calendrier hebdomadaire interactif**.
 - [ ] **Statistiques ACWR, charge, progression**.
 - [ ] **Plan nutrition détaillé**.
 - [ ] **Gestion des compétitions et recalcul du plan**.
