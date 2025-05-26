@@ -23,7 +23,8 @@ La structure principale est la suivante :
 - `GET /stats/summary` : ACWR, charges hebdo et progression.
 - `POST /nutrition/plan` : génère un plan nutrition basé sur le poids et l'objectif.
 - Les modèles sont définis dans `packages/api/app/models.py` et les données sont
-  stockées dans une base en mémoire (`packages/api/app/db.py`).
+  désormais persistées dans SQLite (`coaching.db`). On peut choisir un autre
+  backend via la variable d'environnement `COACHING_DB`.
 
 ## Frontend
 - React (structure minimaliste)

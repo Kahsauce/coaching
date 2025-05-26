@@ -4,11 +4,10 @@ from datetime import date, timedelta
 
 """Persistance des données.
 
-Cette implémentation en mémoire sert uniquement de prototype. Pour rendre
-l'application opérationnelle (voir point 1 du fichier TODO.md), il faudra la
-remplacer par une base de données réelle, par exemple PostgreSQL via Prisma ou
-SQLAlchemy. Toutes les méthodes devront alors effectuer les requêtes nécessaires
-et gérer les migrations.
+L'implémentation d'origine utilisait une base en mémoire pour faciliter le
+prototypage. Le point 1 du fichier TODO.md demande de passer à une base
+persistante. Ce module propose d'utiliser par défaut SQLite mais permet de
+sélectionner d'autres backends via la variable d'environnement ``COACHING_DB``.
 """
 
 class InMemoryDB:
@@ -78,4 +77,25 @@ class InMemoryDB:
     def list_competitions(self) -> List[Competition]:
         return list(self._competitions.values())
 
-DB = InMemoryDB()
+import os
+from .sqlite_db import SQLiteDB
+
+PrismaDB = None
+if os.getenv("COACHING_DB") == "prisma":
+    try:
+        from .prisma_db import PrismaDB as _PrismaDB
+        PrismaDB = _PrismaDB
+    except Exception:  # pragma: no cover - optional dependency
+        PrismaDB = None
+
+backend = os.getenv("COACHING_DB", "sqlite")
+
+if backend == "prisma":
+    if PrismaDB is None:
+        raise ImportError("Prisma backend requested but prisma module not available")
+    DB = PrismaDB()
+elif backend == "memory":
+    DB = InMemoryDB()
+else:
+    path = os.getenv("COACHING_DB_PATH", "coaching.db")
+    DB = SQLiteDB(path)

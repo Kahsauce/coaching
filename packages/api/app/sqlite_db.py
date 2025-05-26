@@ -28,6 +28,38 @@ class SQLiteDB:
             )
             """
         )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS nutrition (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date TEXT NOT NULL,
+                calories INTEGER,
+                hydration_l REAL,
+                carbs_g INTEGER,
+                protein_g INTEGER,
+                fat_g INTEGER
+            )
+            """
+        )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS injuries (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                start_date TEXT NOT NULL,
+                end_date TEXT,
+                description TEXT
+            )
+            """
+        )
+        cur.execute(
+            """
+            CREATE TABLE IF NOT EXISTS competitions (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                date TEXT NOT NULL,
+                name TEXT
+            )
+            """
+        )
         self.conn.commit()
 
     def _next_position(self) -> int:
@@ -117,21 +149,91 @@ class SQLiteDB:
         self.conn.commit()
         return self.list_sessions()
 
-    # For now, other data remain in memory
     def add_nutrition(self, entry: NutritionEntry) -> NutritionEntry:
-        raise NotImplementedError
+        cur = self.conn.cursor()
+        cur.execute(
+            "INSERT INTO nutrition (date, calories, hydration_l, carbs_g, protein_g, fat_g)"
+            " VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                entry.date.isoformat(),
+                entry.calories,
+                entry.hydration_l,
+                entry.carbs_g,
+                entry.protein_g,
+                entry.fat_g,
+            ),
+        )
+        self.conn.commit()
+        entry.id = cur.lastrowid
+        return entry
 
     def list_nutrition(self) -> List[NutritionEntry]:
-        return []
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM nutrition ORDER BY id ASC")
+        rows = cur.fetchall()
+        return [
+            NutritionEntry(
+                id=row["id"],
+                date=date.fromisoformat(row["date"]),
+                calories=row["calories"],
+                hydration_l=row["hydration_l"],
+                carbs_g=row["carbs_g"],
+                protein_g=row["protein_g"],
+                fat_g=row["fat_g"],
+            )
+            for row in rows
+        ]
 
     def add_injury(self, injury: Injury) -> Injury:
-        raise NotImplementedError
+        cur = self.conn.cursor()
+        cur.execute(
+            "INSERT INTO injuries (start_date, end_date, description) VALUES (?, ?, ?)",
+            (
+                injury.start_date.isoformat(),
+                injury.end_date.isoformat() if injury.end_date else None,
+                injury.description,
+            ),
+        )
+        self.conn.commit()
+        injury.id = cur.lastrowid
+        return injury
 
     def list_injuries(self) -> List[Injury]:
-        return []
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM injuries ORDER BY id ASC")
+        rows = cur.fetchall()
+        return [
+            Injury(
+                id=row["id"],
+                start_date=date.fromisoformat(row["start_date"]),
+                end_date=date.fromisoformat(row["end_date"]) if row["end_date"] else None,
+                description=row["description"] or "",
+            )
+            for row in rows
+        ]
 
     def add_competition(self, comp: Competition) -> Competition:
-        raise NotImplementedError
+        cur = self.conn.cursor()
+        cur.execute(
+            "INSERT INTO competitions (date, name) VALUES (?, ?)",
+            (
+                comp.date.isoformat(),
+                comp.name,
+            ),
+        )
+        self.conn.commit()
+        comp.id = cur.lastrowid
+        return comp
 
     def list_competitions(self) -> List[Competition]:
-        return []
+        cur = self.conn.cursor()
+        cur.execute("SELECT * FROM competitions ORDER BY id ASC")
+        rows = cur.fetchall()
+        return [
+            Competition(
+                id=row["id"],
+                date=date.fromisoformat(row["date"]),
+                name=row["name"] or "",
+            )
+            for row in rows
+        ]
