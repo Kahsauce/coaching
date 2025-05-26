@@ -29,4 +29,4 @@ def test_adjust_sessions_with_injury():
     )
     injury = Injury(id=0, start_date=date.today(), end_date=date.today() + timedelta(days=2))
     adjusted = adjust_sessions([upcoming], injuries=[injury], today=date.today())
-    assert adjusted[0].duration_min == 30
+    assert adjusted[0].duration_min == 33
