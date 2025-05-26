@@ -6,9 +6,10 @@ from .acwr import compute_acwr
 from .rule_engine import adjust_sessions
 from .stats import stats_summary
 from .nutrition import calculate_plan, NutritionPlanRequest
+from .cycles import generate_macrocycle, Macrocycle
 
 from .models import TrainingSession, NutritionEntry, Injury, Competition
-from .db import DB
+from .database import DB
 
 app = FastAPI(title="Coaching App")
 
@@ -111,3 +112,9 @@ def get_stats_summary():
 def get_nutrition_plan(req: NutritionPlanRequest):
     """Return a basic nutrition plan from body weight and goal."""
     return calculate_plan(req.body_weight_kg, req.goal)
+
+
+@app.get("/cycles", response_model=Macrocycle)
+def create_macrocycle(start: date, weeks: int = 20):
+    """Generate a basic macrocycle starting at given date."""
+    return generate_macrocycle(start, weeks)
