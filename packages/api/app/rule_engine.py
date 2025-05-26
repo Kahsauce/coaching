@@ -1,7 +1,7 @@
-from datetime import date
+from datetime import date, timedelta
 from typing import List
 
-from .models import TrainingSession, Injury
+from .models import TrainingSession, Injury, Competition
 from .acwr import compute_acwr
 
 
@@ -9,6 +9,7 @@ def adjust_sessions(
     sessions: List[TrainingSession],
     today: date | None = None,
     injuries: List[Injury] | None = None,
+    competitions: List[Competition] | None = None,
 ) -> List[TrainingSession]:
     """Ajuste les séances en fonction de l'ACWR et des blessures."""
 
@@ -27,5 +28,15 @@ def adjust_sessions(
             for s in sessions:
                 if injury.start_date <= s.date <= end and not s.completed:
                     s.duration_min = int(s.duration_min * 0.5)
+
+    if competitions:
+        for comp in competitions:
+            for s in sessions:
+                if comp.date - timedelta(days=3) <= s.date <= comp.date + timedelta(days=1):
+                    if s.date == comp.date:
+                        s.description = f"Repos - {comp.name}"
+                        s.duration_min = 0
+                    else:
+                        s.duration_min = int(s.duration_min * 0.5)
 
     return sessions

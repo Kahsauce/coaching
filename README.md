@@ -42,7 +42,7 @@ protéines, lipides).
 
 ```
 pip install -r packages/api/requirements.txt
-pytest
+pytest --cov=packages/api/app --cov-report=term-missing
 ```
 
 ## Plan d'évolution

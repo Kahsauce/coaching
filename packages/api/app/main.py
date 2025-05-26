@@ -7,7 +7,7 @@ from .rule_engine import adjust_sessions
 from .stats import stats_summary
 from .nutrition import calculate_plan, NutritionPlanRequest
 
-from .models import TrainingSession, NutritionEntry, Injury
+from .models import TrainingSession, NutritionEntry, Injury, Competition
 from .db import DB
 
 app = FastAPI(title="Coaching App")
@@ -64,6 +64,16 @@ def add_injury(injury: Injury):
     return DB.add_injury(injury)
 
 
+@app.get("/competitions", response_model=List[Competition])
+def list_competitions():
+    return DB.list_competitions()
+
+
+@app.post("/competitions", response_model=Competition)
+def add_competition(comp: Competition):
+    return DB.add_competition(comp)
+
+
 @app.post("/workouts/order", response_model=List[TrainingSession])
 def reorder_sessions(order: List[int]):
     """Reorder sessions according to given list of ids."""
@@ -75,7 +85,8 @@ def plan_adjust():
     """Apply rule engine to adapt upcoming sessions."""
     sessions = DB.list_sessions()
     injuries = DB.list_injuries()
-    adjusted = adjust_sessions(sessions, injuries=injuries)
+    competitions = DB.list_competitions()
+    adjusted = adjust_sessions(sessions, injuries=injuries, competitions=competitions)
     # sessions are modified in place, update DB entries
     for s in adjusted:
         DB.update_session(s.id, s)

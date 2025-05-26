@@ -31,3 +31,11 @@ class Injury(BaseModel):
     start_date: date
     end_date: Optional[date] = None
     description: str = ""
+
+
+class Competition(BaseModel):
+    """Evénement de compétition impactant la planification."""
+
+    id: int
+    date: date
+    name: str = ""
