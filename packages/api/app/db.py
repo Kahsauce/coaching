@@ -1,5 +1,5 @@
 from typing import Dict, List
-from .models import TrainingSession, NutritionEntry, Injury
+from .models import TrainingSession, NutritionEntry, Injury, Competition
 from datetime import date, timedelta
 
 class InMemoryDB:
@@ -8,9 +8,11 @@ class InMemoryDB:
         self._order: List[int] = []
         self._nutrition: Dict[int, NutritionEntry] = {}
         self._injuries: Dict[int, Injury] = {}
+        self._competitions: Dict[int, Competition] = {}
         self._counter = 1
         self._nutrition_counter = 1
         self._injury_counter = 1
+        self._competition_counter = 1
 
     def add_session(self, session: TrainingSession) -> TrainingSession:
         session.id = self._counter
@@ -56,5 +58,15 @@ class InMemoryDB:
 
     def list_injuries(self) -> List[Injury]:
         return list(self._injuries.values())
+
+    # Competitions
+    def add_competition(self, comp: Competition) -> Competition:
+        comp.id = self._competition_counter
+        self._competition_counter += 1
+        self._competitions[comp.id] = comp
+        return comp
+
+    def list_competitions(self) -> List[Competition]:
+        return list(self._competitions.values())
 
 DB = InMemoryDB()
