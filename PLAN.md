@@ -16,6 +16,6 @@ Cette application doit évoluer vers une plateforme complète de suivi sportif (
 - [x] **Plan nutrition détaillé**.
 - [x] **Gestion des compétitions et recalcul du plan**.
 - [x] **Tests unitaires et e2e (couverture >80%)**.
-- [ ] **Déploiement Docker + CI/CD et documentation complète**.
+- [ ] **CI/CD et documentation complète**.
 
 Chaque étape fera l'objet de branches et de revues de code dédiées.

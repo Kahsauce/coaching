@@ -7,7 +7,7 @@ Turborepo.
 La structure principale est la suivante :
 
 - `apps/web` : frontend React
-- `apps/mobile` : application mobile (placeholder)
+- `apps/mobile` : première version mobile réalisée avec React Native
 - `packages/api` : backend FastAPI
 
 ## Backend
