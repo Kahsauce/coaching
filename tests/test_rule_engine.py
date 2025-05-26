@@ -19,6 +19,7 @@ def test_adjust_sessions_reduces_load_when_acwr_high():
     sessions = [past, upcoming]
     adjusted = adjust_sessions(sessions, today=date.today())
     assert adjusted[1].duration_min < 60
+    assert adjusted[1].rpe < 5
 
 
 def test_adjust_sessions_increases_load_when_acwr_low():
@@ -28,3 +29,14 @@ def test_adjust_sessions_increases_load_when_acwr_low():
     sessions = [past, upcoming]
     adjusted = adjust_sessions(sessions, today=date.today())
     assert adjusted[1].duration_min > 60
+    assert adjusted[1].rpe > 5
+
+
+def test_adjust_sessions_boost_when_acwr_very_low():
+    past = TrainingSession(id=1, date=date.today() - timedelta(days=28), sport="run", duration_min=30, rpe=5)
+    upcoming = make_session(1, 60)
+    sessions = [past, upcoming]
+    # ratio will be very low (<0.5) since only one low session in chronic period
+    adjusted = adjust_sessions(sessions, today=date.today())
+    assert adjusted[1].duration_min > 66  # 60 * 1.1 would be 66, expect more
+    assert adjusted[1].rpe >= 6

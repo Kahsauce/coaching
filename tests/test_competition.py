@@ -21,4 +21,4 @@ def test_adjust_sessions_with_competition():
     comp_date = date.today() + timedelta(days=2)
     session = TrainingSession(id=1, date=comp_date - timedelta(days=1), sport="run", duration_min=60)
     adjusted = adjust_sessions([session], competitions=[Competition(id=1, date=comp_date, name="10k")], today=date.today())
-    assert adjusted[0].duration_min == 33
+    assert adjusted[0].duration_min == 36
