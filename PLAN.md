@@ -8,8 +8,8 @@ Cette application doit évoluer vers une plateforme complète de suivi sportif (
 - [x] **Conception de la base de données avec Prisma**.
 - [x] **Implémentation d'un moteur de règles pour planifier et adapter les séances**.
 - [x] **API workouts (tRPC/GraphQL)** avec drag-and-drop et replanification.
-- [ ] **Module nutrition et hydratation**.
-- [ ] **Gestion des blessures et adaptations automatiques**.
+- [x] **Module nutrition et hydratation**.
+- [x] **Gestion des blessures et adaptations automatiques**.
 - [ ] **Dashboard Aujourd'hui** (web & mobile).
 - [ ] **Calendrier hebdomadaire interactif**.
 - [ ] **Statistiques ACWR, charge, progression**.

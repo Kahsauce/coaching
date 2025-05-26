@@ -1,15 +1,17 @@
 from datetime import date
 from typing import List
 
-from .models import TrainingSession
+from .models import TrainingSession, Injury
 from .acwr import compute_acwr
 
 
-def adjust_sessions(sessions: List[TrainingSession], today: date | None = None) -> List[TrainingSession]:
-    """Simple rule engine adjusting future sessions based on ACWR.
+def adjust_sessions(
+    sessions: List[TrainingSession],
+    today: date | None = None,
+    injuries: List[Injury] | None = None,
+) -> List[TrainingSession]:
+    """Ajuste les séances en fonction de l'ACWR et des blessures."""
 
-    If the current ACWR is above 1.5, future sessions duration is reduced by 20%.
-    """
     ratio = compute_acwr(sessions, today=today)
     if today is None:
         today = date.today()
@@ -18,4 +20,12 @@ def adjust_sessions(sessions: List[TrainingSession], today: date | None = None) 
         for s in sessions:
             if not s.completed and s.date >= today:
                 s.duration_min = int(s.duration_min * 0.8)
+
+    if injuries:
+        for injury in injuries:
+            end = injury.end_date or date.max
+            for s in sessions:
+                if injury.start_date <= s.date <= end and not s.completed:
+                    s.duration_min = int(s.duration_min * 0.5)
+
     return sessions
