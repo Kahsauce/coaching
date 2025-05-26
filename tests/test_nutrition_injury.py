@@ -43,3 +43,11 @@ def test_progressive_return_after_injury():
     adjusted = adjust_sessions(past_sessions + [upcoming], injuries=[injury], today=date.today())
     returned = adjusted[-1]
     assert returned.duration_min == 45
+
+
+def test_update_injury_in_memory_db():
+    db = InMemoryDB()
+    injury = db.add_injury(Injury(id=0, start_date=date.today()))
+    injury.end_date = date.today()
+    updated = db.update_injury(injury.id, injury)
+    assert updated.end_date == date.today()

@@ -73,6 +73,21 @@ def add_injury(injury: Injury):
     return stored
 
 
+@app.put("/injuries/{injury_id}", response_model=Injury)
+def update_injury(injury_id: int, injury: Injury):
+    if not any(i.id == injury_id for i in DB.list_injuries()):
+        raise HTTPException(status_code=404, detail="Injury not found")
+    updated = DB.update_injury(injury_id, injury)
+    # Recalculate plan after injury update
+    sessions = DB.list_sessions()
+    injuries = DB.list_injuries()
+    competitions = DB.list_competitions()
+    adjusted = adjust_sessions(sessions, injuries=injuries, competitions=competitions)
+    for s in adjusted:
+        DB.update_session(s.id, s)
+    return updated
+
+
 @app.get("/competitions", response_model=List[Competition])
 def list_competitions():
     return DB.list_competitions()
