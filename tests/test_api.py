@@ -55,3 +55,8 @@ async def test_e2e(engine):
         assert r.status_code == 200
         data = r.json()
         assert len(data) == 1
+        sid = data[0]["id"]
+        r = await ac.delete(f"/sessions/{sid}", auth=auth)
+        assert r.status_code == 200
+        r = await ac.get("/sessions", auth=auth)
+        assert r.json() == []

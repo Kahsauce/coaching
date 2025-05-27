@@ -912,9 +912,11 @@ document.getElementById('sessionForm').addEventListener('submit', async e => {
     duration: +document.getElementById('duration').value,
     rpe: +document.getElementById('rpe').value
   };
-  const headers = getAuth();
-  headers['Content-Type'] = 'application/json';
-  const resp = await fetch('/sessions', {method:'POST', headers, body: JSON.stringify(payload)});
+  const resp = await fetch('/sessions', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getAuth() },
+    body: JSON.stringify(payload)
+  });
   if(resp.ok){
     document.getElementById('sessionForm').reset();
     document.getElementById('msg').textContent = '✅ Séance ajoutée';
@@ -924,7 +926,7 @@ document.getElementById('sessionForm').addEventListener('submit', async e => {
   }
 });
 async function loadSessions(){
-  const resp = await fetch('/sessions', {headers: getAuth()});
+  const resp = await fetch('/sessions', {headers: { ...getAuth() }});
   if(resp.ok){
     const data = await resp.json();
     const table = document.getElementById('sessionsTable');
@@ -948,7 +950,10 @@ async function loadSessions(){
 document.getElementById('sessionsTable').addEventListener('click', async e => {
   if(e.target.classList.contains('delete-btn')){
     const id = e.target.dataset.id;
-    const resp = await fetch(`/sessions/${id}`, {method:'DELETE', headers: getAuth()});
+    const resp = await fetch(`/sessions/${id}`, {
+      method: 'DELETE',
+      headers: { ...getAuth() }
+    });
     if(resp.ok){
       loadSessions();
       document.getElementById('msg').textContent = '✅ Séance supprimée';
