@@ -859,6 +859,12 @@
             </form>
         </div>
     </div>
+<script>
+fetch("/api/metrics?date=" + new Date().toISOString().slice(0,10))
+  .then(r => r.json())
+  .then(d => console.log("Métriques:", d))
+  .catch(err => console.error(err));
+</script>
 
     </body>
 </html>
