@@ -5,11 +5,7 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
-def _db(tmp_path):
-    db_file = tmp_path / "test.db"
-    os.environ["DATABASE_URL"] = f"sqlite:///{db_file}"
-    sport_plan.engine = sport_plan.create_engine(os.environ["DATABASE_URL"], echo=False)
-    sport_plan.init_db()
+def _db(engine):
     yield
 
 

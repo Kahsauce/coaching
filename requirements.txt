@@ -4,3 +4,4 @@ sqlmodel
 pytest
 pytest-httpx
 httpx
+pytest-playwright

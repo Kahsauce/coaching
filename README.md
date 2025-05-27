@@ -21,6 +21,10 @@ Ou bien :
 ```
 npm run dev
 ```
+Ou directement :
+```
+uvicorn server:app --reload --workers 1
+```
 
 La page `index.html` est servie directement par l'API FastAPI.
 
@@ -28,6 +32,10 @@ La page `index.html` est servie directement par l'API FastAPI.
 
 - `DATABASE_URL` : URL de la base (par défaut `sqlite:///app.db`).
 - `APP_PASSWORD` : mot de passe pour les routes protégées `/profiles` et `/sessions`.
+
+L'interface Web demande ce mot de passe via un prompt JavaScript avant les appels API protégés.
+
+Pour la production, stockez votre fichier `.env` hors du dépôt et instanciez `FastAPI(docs_url=None)` pour désactiver la documentation interactive.
 
 ## Tests
 
