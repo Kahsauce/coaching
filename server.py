@@ -2,6 +2,7 @@ import os
 import secrets
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Depends
+from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlmodel import Session, select
@@ -83,4 +84,9 @@ def delete_session(session_id: int, _: HTTPBasicCredentials = Depends(require_au
     return {"status": "deleted"}
 
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
+@app.get("/", response_class=HTMLResponse)
+def root() -> FileResponse:
+    return FileResponse("static/index.html")

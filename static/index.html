@@ -912,7 +912,9 @@ document.getElementById('sessionForm').addEventListener('submit', async e => {
     duration: +document.getElementById('duration').value,
     rpe: +document.getElementById('rpe').value
   };
-  const resp = await fetch('/sessions', {method:'POST', headers:{'Content-Type':'application/json', ...getAuth()}, body: JSON.stringify(payload)});
+  const headers = getAuth();
+  headers['Content-Type'] = 'application/json';
+  const resp = await fetch('/sessions', {method:'POST', headers, body: JSON.stringify(payload)});
   if(resp.ok){
     document.getElementById('sessionForm').reset();
     document.getElementById('msg').textContent = '✅ Séance ajoutée';
@@ -938,6 +940,9 @@ async function loadSessions(){
       tbody.appendChild(tr);
     });
     table.classList.remove('hidden');
+    document.getElementById('msg').textContent = '✅ Liste chargée';
+  } else {
+    document.getElementById('msg').textContent = 'Erreur chargement séances';
   }
 }
 document.getElementById('sessionsTable').addEventListener('click', async e => {
@@ -946,6 +951,9 @@ document.getElementById('sessionsTable').addEventListener('click', async e => {
     const resp = await fetch(`/sessions/${id}`, {method:'DELETE', headers: getAuth()});
     if(resp.ok){
       loadSessions();
+      document.getElementById('msg').textContent = '✅ Séance supprimée';
+    } else {
+      document.getElementById('msg').textContent = 'Erreur suppression';
     }
   }
 });
