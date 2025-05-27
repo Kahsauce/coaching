@@ -1,0 +1,7 @@
+{
+  "name": "coaching-app",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "uvicorn server:app --reload"
+  }
+}

@@ -859,11 +859,34 @@
             </form>
         </div>
     </div>
+<div class="p-4" id="simpleForm">
+  <form id="sessionForm" class="space-y-2">
+    <input type="date" id="sessDate" class="border p-1" />
+    <input type="text" id="activity" placeholder="Activité" class="border p-1" />
+    <input type="number" id="duration" placeholder="Durée" class="border p-1" />
+    <input type="number" id="rpe" placeholder="RPE" class="border p-1" />
+    <button class="btn btn-primary" type="submit">Ajouter séance</button>
+  </form>
+  <div id="metrics" class="mt-4 text-sm"></div>
+</div>
 <script>
-fetch("/api/metrics?date=" + new Date().toISOString().slice(0,10))
-  .then(r => r.json())
-  .then(d => console.log("Métriques:", d))
-  .catch(err => console.error(err));
+async function loadMetrics(d){
+  const resp = await fetch(`/metrics?date=${d || new Date().toISOString().slice(0,10)}`);
+  const data = await resp.json();
+  document.getElementById('metrics').textContent = `Charge aiguë: ${data.acute}, chronique: ${data.chronic}, ACWR: ${data.acwr.toFixed(2)}`;
+}
+document.getElementById('sessionForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const payload = {
+    date: document.getElementById('sessDate').value,
+    activity_type: document.getElementById('activity').value,
+    duration: +document.getElementById('duration').value,
+    rpe: +document.getElementById('rpe').value
+  };
+  await fetch('/sessions', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
+  loadMetrics(payload.date);
+});
+loadMetrics();
 </script>
 
     </body>
