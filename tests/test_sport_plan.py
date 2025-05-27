@@ -1,21 +1,16 @@
 import os
 from datetime import date, timedelta
 from src import sport_plan
+import pytest
 
-TEST_DB = "test.db"
 
-
-def setup_module(module):
-    if os.path.exists(TEST_DB):
-        os.remove(TEST_DB)
-    os.environ["DATABASE_URL"] = f"sqlite:///{TEST_DB}"
+@pytest.fixture(autouse=True)
+def _db(tmp_path):
+    db_file = tmp_path / "test.db"
+    os.environ["DATABASE_URL"] = f"sqlite:///{db_file}"
     sport_plan.engine = sport_plan.create_engine(os.environ["DATABASE_URL"], echo=False)
     sport_plan.init_db()
-
-
-def teardown_module(module):
-    if os.path.exists(TEST_DB):
-        os.remove(TEST_DB)
+    yield
 
 
 def test_add_profile_and_session():

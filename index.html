@@ -867,9 +867,20 @@
     <input type="number" id="rpe" placeholder="RPE" class="border p-1" />
     <button class="btn btn-primary" type="submit">Ajouter séance</button>
   </form>
+  <div id="msg" class="text-green-600 mt-2"></div>
+  <button id="viewSessions" class="btn btn-secondary mt-2">Voir les séances</button>
+  <pre id="sessionsList" class="text-xs mt-2"></pre>
   <div id="metrics" class="mt-4 text-sm"></div>
 </div>
 <script>
+let authHeader = null;
+function getAuth(){
+  if(!authHeader){
+    const pwd = prompt('Mot de passe');
+    authHeader = 'Basic ' + btoa('admin:' + pwd);
+  }
+  return { 'Authorization': authHeader };
+}
 async function loadMetrics(d){
   const resp = await fetch(`/metrics?date=${d || new Date().toISOString().slice(0,10)}`);
   const data = await resp.json();
@@ -883,8 +894,21 @@ document.getElementById('sessionForm').addEventListener('submit', async e => {
     duration: +document.getElementById('duration').value,
     rpe: +document.getElementById('rpe').value
   };
-  await fetch('/sessions', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)});
-  loadMetrics(payload.date);
+  const resp = await fetch('/sessions', {method:'POST', headers:{'Content-Type':'application/json', ...getAuth()}, body: JSON.stringify(payload)});
+  if(resp.ok){
+    document.getElementById('sessionForm').reset();
+    document.getElementById('msg').textContent = '✅ Séance ajoutée';
+    loadMetrics(payload.date);
+  } else {
+    document.getElementById('msg').textContent = 'Erreur lors de l\'ajout';
+  }
+});
+document.getElementById('viewSessions').addEventListener('click', async () => {
+  const resp = await fetch('/sessions', {headers: getAuth()});
+  if(resp.ok){
+    const data = await resp.json();
+    document.getElementById('sessionsList').textContent = JSON.stringify(data, null, 2);
+  }
 });
 loadMetrics();
 </script>

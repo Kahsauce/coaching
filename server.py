@@ -1,7 +1,11 @@
-from fastapi import FastAPI, HTTPException
-from fastapi.staticfiles import StaticFiles
-from sqlmodel import Session, select
+import os
+import secrets
 from datetime import datetime
+from fastapi import FastAPI, HTTPException, Depends
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from sqlmodel import Session, select
 
 from src.sport_plan import (
     engine,
@@ -13,15 +17,27 @@ from src.sport_plan import (
     compute_acwr,
 )
 
+security = HTTPBasic()
+
+def require_auth(credentials: HTTPBasicCredentials = Depends(security)) -> None:
+    pwd = os.getenv("APP_PASSWORD")
+    valid = credentials.username == "admin" and pwd and secrets.compare_digest(credentials.password, pwd)
+    if not valid:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 app = FastAPI()
-app.mount("/", StaticFiles(directory=".", html=True), name="static")
+app.mount("/static", StaticFiles(directory=".", html=True), name="static")
+
+@app.get("/")
+def read_index() -> FileResponse:
+    return FileResponse("index.html")
 
 @app.on_event("startup")
 def on_startup() -> None:
     init_db()
 
 @app.post("/profiles")
-def create_profile(profile: UserProfile) -> UserProfile:
+def create_profile(profile: UserProfile, _: HTTPBasicCredentials = Depends(require_auth)) -> UserProfile:
     with Session(engine) as session:
         session.add(profile)
         session.commit()
@@ -29,12 +45,23 @@ def create_profile(profile: UserProfile) -> UserProfile:
         return profile
 
 @app.post("/sessions")
-def create_session(session_data: SessionModel) -> SessionModel:
+def create_session(session_data: SessionModel, _: HTTPBasicCredentials = Depends(require_auth)) -> SessionModel:
+    if session_data.duration <= 0:
+        raise HTTPException(status_code=400, detail="Durée invalide")
+    if not 1 <= session_data.rpe <= 10:
+        raise HTTPException(status_code=400, detail="RPE invalide")
+    if session_data.date > datetime.today().date():
+        raise HTTPException(status_code=400, detail="Date dans le futur interdite")
     with Session(engine) as session:
         session.add(session_data)
         session.commit()
         session.refresh(session_data)
         return session_data
+
+@app.get("/sessions")
+def list_all_sessions(_: HTTPBasicCredentials = Depends(require_auth)):
+    with Session(engine) as session:
+        return session.exec(select(SessionModel)).all()
 
 @app.get("/metrics")
 def get_metrics(date: str) -> dict:
