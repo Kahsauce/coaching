@@ -18,8 +18,8 @@ class SessionModel(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     date: date
     activity_type: str
-    duration: int
-    rpe: int
+    duration: int = Field(gt=0)
+    rpe: int = Field(ge=1, le=10)
 
     @property
     def srpe(self) -> int:

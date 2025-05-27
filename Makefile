@@ -1,4 +1,5 @@
 dev:
-uvicorn server:app --reload
+	uvicorn server:app --reload --workers 1
+
 test:
-pytest -q
+	pytest -q
