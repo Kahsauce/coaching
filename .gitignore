@@ -1,7 +1,0 @@
-coaching.db
-__pycache__/
-packages/api/app/__pycache__/
-packages/api/pydantic/__pycache__/
-tests/__pycache__/
-*.pyc
-
