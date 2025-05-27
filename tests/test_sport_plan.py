@@ -39,3 +39,23 @@ def test_acwr_computation():
     assert acute > 0
     assert chronic > 0
     assert abs(acwr - (acute / chronic)) < 1e-5
+
+
+def test_metrics_single_session():
+    today = date.today()
+    session = sport_plan.SessionModel(
+        date=today,
+        activity_type="course",
+        duration=60,
+        rpe=5,
+    )
+    sport_plan.add_session(session)
+
+    sessions = sport_plan.list_sessions()
+    acute = sport_plan.compute_acute_load(sessions, today)
+    chronic = sport_plan.compute_chronic_load(sessions, today)
+    acwr = sport_plan.compute_acwr(sessions, today)
+
+    assert acute == session.srpe
+    assert chronic == session.srpe / 4
+    assert acwr == acute / chronic
