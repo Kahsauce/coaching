@@ -1,0 +1,864 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planificateur Sportif Intégré</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/lucide-static@latest/dist/lucide.min.js" defer></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Gris clair pour le fond général */
+        }
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #1f2937; /* Gris foncé pour la sidebar */
+            color: #e5e7eb;
+            padding: 20px;
+            transition: width 0.3s ease;
+        }
+        .sidebar.collapsed {
+            width: 70px;
+        }
+        .sidebar.collapsed .nav-text {
+            display: none;
+        }
+        .sidebar.collapsed .nav-item {
+            justify-content: center;
+        }
+        .sidebar.collapsed .profile-name, .sidebar.collapsed .profile-email {
+            display: none;
+        }
+        .sidebar.collapsed .logo-text {
+            display: none;
+        }
+        .sidebar.collapsed .toggle-sidebar-btn {
+            justify-content: center;
+        }
+
+        .content-area {
+            flex-grow: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 10px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .nav-item:hover, .nav-item.active {
+            background-color: #374151; /* Gris moyen pour hover/active */
+            color: #ffffff;
+        }
+        .nav-item i {
+            margin-right: 12px;
+            width:20px;
+            height:20px;
+        }
+        .header {
+            background-color: #ffffff;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e5e7eb;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-primary {
+            background-color: #3b82f6; /* Bleu primaire */
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2563eb;
+        }
+        .btn-secondary {
+            background-color: #6b7280; /* Gris pour secondaire */
+            color: white;
+        }
+        .btn-secondary:hover {
+            background-color: #4b5563;
+        }
+        .btn-outline {
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+        .btn-outline:hover {
+            background-color: #f3f4f6;
+        }
+        .tab-button {
+            padding: 10px 15px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            margin-right: 5px;
+            font-weight: 500;
+        }
+        .tab-button.active {
+            border-bottom-color: #3b82f6;
+            color: #3b82f6;
+        }
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            display: flex; 
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        .badge-foot { background-color: #dcfce7; color: #166534; } 
+        .badge-triathlon { background-color: #cffafe; color: #0891b2; } 
+        .badge-trail { background-color: #ffedd5; color: #9a3412; } 
+        .badge-muscu { background-color: #e0e7ff; color: #3730a3; } 
+        .badge-souplesse { background-color: #fce7f3; color: #9d174d; } 
+        .badge-course { background-color: #fee2e2; color: #991b1b; } 
+        .badge-repos { background-color: #e5e7eb; color: #374151; } 
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 8px;
+        }
+        .day-cell {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 150px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .day-cell h4 {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #1f2937;
+        }
+        .activity-item {
+            font-size: 0.875rem;
+            padding: 6px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .activity-item i {
+            margin-right: 6px;
+            width: 16px;
+            height: 16px;
+        }
+        .hidden {
+            display: none !important;
+        }
+    </style>
+    <script defer>
+        // Fonction pour initialiser Lucide avec des tentatives répétées
+        function initLucideWithRetry(callback, maxRetries = 50, delay = 100) {
+            let attempts = 0;
+            function attempt() {
+                if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+                    try {
+                        lucide.createIcons();
+                        console.log('Lucide icons initialized successfully.');
+                        if (callback) callback(); // Exécuter la logique principale de l'application
+                    } catch (e) {
+                        console.error('Error calling lucide.createIcons():', e);
+                        // Si createIcons échoue, nous pourrions quand même vouloir exécuter l'application
+                        if (attempts < maxRetries) { // Permettre des tentatives même si createIcons échoue initialement
+                           attempts++;
+                           setTimeout(attempt, delay);
+                        } else {
+                           console.error(`lucide.createIcons() failed after ${maxRetries} attempts.`);
+                           if (callback) callback(); // Exécuter l'application même si les icônes ne sont pas parfaites
+                        }
+                    }
+                } else {
+                    attempts++;
+                    if (attempts < maxRetries) {
+                        // console.warn(`Lucide not ready, attempt ${attempts}/${maxRetries}. Retrying in ${delay}ms...`);
+                        setTimeout(attempt, delay);
+                    } else {
+                        console.error(`Lucide library failed to load/initialize after ${maxRetries} attempts.`);
+                        if (callback) callback(); // Exécuter l'application même sans icônes
+                    }
+                }
+            }
+            attempt();
+        }
+
+        // Fonction principale de l'application
+        function mainAppLogic() {
+            const navItems = document.querySelectorAll('.nav-item');
+            const contentSections = document.querySelectorAll('.content-section');
+            const sidebar = document.getElementById('sidebar');
+            const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+            const currentDateEl = document.getElementById('currentDate');
+
+            function _showSection(sectionId) {
+                contentSections.forEach(section => {
+                    section.classList.toggle('hidden', section.id !== sectionId);
+                });
+                navItems.forEach(item => {
+                    item.classList.toggle('active', item.dataset.section === sectionId);
+                });
+            }
+
+            function _openModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+            }
+
+            function _closeModal(modalId) {
+                const modal = document.getElementById(modalId);
+                if (modal) {
+                    modal.classList.add('hidden');
+                    modal.classList.remove('flex');
+                }
+            }
+
+            function _openAddEventModal() { _openModal('addEventModal'); }
+            function _openAddInjuryModal() { _openModal('addInjuryModal'); }
+
+            function _openDayDetailModal(dayName) {
+                const titleEl = document.getElementById('dayDetailModalTitle');
+                if (titleEl) {
+                    titleEl.textContent = `Détail - ${dayName}`;
+                }
+                _openModal('dayDetailModal');
+                _showDayDetailTab('training');
+            }
+
+            function _showDietTab(tabIdToShow) {
+                const tabIds = ['dietPlanTab', 'recipesTab', 'addRecipeTab'];
+                const buttons = document.querySelectorAll('#diet .tab-button');
+
+                tabIds.forEach(id => {
+                    const tabElement = document.getElementById(id);
+                    if (tabElement) {
+                        tabElement.classList.toggle('hidden', id !== tabIdToShow);
+                    }
+                });
+
+                buttons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${tabIdToShow}'`));
+                });
+            }
+
+            function _showDayDetailTab(tabIdToShow) {
+                const tabMap = { training: 'dayDetailTrainingTab', diet: 'dayDetailDietTab' };
+                const buttons = document.querySelectorAll('#dayDetailModal .tab-button');
+
+                Object.values(tabMap).forEach(id => {
+                    const tabElement = document.getElementById(id);
+                    if (tabElement) tabElement.classList.add('hidden');
+                });
+
+                const elementToShowId = tabMap[tabIdToShow];
+                if (elementToShowId) {
+                    const elementToShow = document.getElementById(elementToShowId);
+                    if (elementToShow) elementToShow.classList.remove('hidden');
+                }
+
+                buttons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${tabIdToShow}'`));
+                });
+            }
+
+            window.showSection = _showSection;
+            window.openModal = _openModal;
+            window.closeModal = _closeModal;
+            window.openAddEventModal = _openAddEventModal;
+            window.openAddInjuryModal = _openAddInjuryModal;
+            window.openDayDetailModal = _openDayDetailModal;
+            window.showDietTab = _showDietTab;
+            window.showDayDetailTab = _showDayDetailTab;
+
+            navItems.forEach(item => {
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const sectionId = item.dataset.section;
+                    _showSection(sectionId);
+                });
+            });
+
+            if (toggleSidebarBtn && sidebar) {
+                toggleSidebarBtn.addEventListener('click', () => {
+                    sidebar.classList.toggle('collapsed');
+                    if (typeof lucide !== 'undefined' && typeof lucide.createIcons === 'function') {
+                        setTimeout(() => {
+                             lucide.createIcons();
+                        }, 150);
+                    }
+                });
+            }
+
+            if (currentDateEl) {
+                currentDateEl.textContent = new Date().toLocaleDateString('fr-FR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            }
+
+            _showSection('dashboard');
+            _showDietTab('plan');
+            console.log("Main application logic executed.");
+        }
+
+        // S'assurer que le DOM est prêt avant d'essayer d'initialiser Lucide et la logique de l'application
+        document.addEventListener('DOMContentLoaded', function() {
+            initLucideWithRetry(mainAppLogic);
+        });
+    </script>
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="flex items-center justify-between mb-8">
+                <div class="flex items-center">
+                    <i data-lucide="zap" class="text-blue-400"></i>
+                    <span class="text-xl font-bold ml-2 logo-text">SportPlan</span>
+                </div>
+                <button id="toggleSidebarBtn" class="p-1 rounded-md hover:bg-gray-700 toggle-sidebar-btn">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+
+            <div class="mb-8 text-center">
+                <img src="https://placehold.co/80x80/60a5fa/ffffff?text=User" alt="Photo de profil" class="w-20 h-20 rounded-full mx-auto mb-3">
+                <h3 class="font-semibold text-lg profile-name">Nom Utilisateur</h3>
+                <p class="text-sm text-gray-400 profile-email">utilisateur@example.com</p>
+            </div>
+
+            <nav>
+                <a href="#dashboard" class="nav-item active" data-section="dashboard">
+                    <i data-lucide="layout-dashboard"></i><span class="nav-text">Tableau de Bord</span>
+                </a>
+                <a href="#planning" class="nav-item" data-section="planning">
+                    <i data-lucide="calendar-days"></i><span class="nav-text">Planning</span>
+                </a>
+                <a href="#diet" class="nav-item" data-section="diet">
+                    <i data-lucide="utensils-crossed"></i><span class="nav-text">Diète & Recettes</span>
+                </a>
+                <a href="#events" class="nav-item" data-section="events">
+                    <i data-lucide="trophy"></i><span class="nav-text">Courses & Matchs</span>
+                </a>
+                <a href="#injuries" class="nav-item" data-section="injuries">
+                    <i data-lucide="activity"></i><span class="nav-text">Suivi Blessures</span>
+                </a>
+                 <a href="#knowledge" class="nav-item" data-section="knowledge">
+                    <i data-lucide="book-open"></i><span class="nav-text">Base de Connaissances</span>
+                </a>
+                <a href="#settings" class="nav-item mt-auto" data-section="settings">
+                    <i data-lucide="settings"></i><span class="nav-text">Paramètres</span>
+                </a>
+            </nav>
+        </aside>
+
+        <main class="content-area">
+            <section id="dashboard" class="content-section">
+                <div class="header flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Tableau de Bord</h1>
+                    <span class="text-sm text-gray-500" id="currentDate"></span>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="card">
+                        <div class="flex items-center text-blue-600 mb-3">
+                            <i data-lucide="calendar-check" class="mr-2"></i>
+                            <h3 class="text-lg font-semibold">Entraînement du Jour</h3>
+                        </div>
+                        <p class="text-gray-600"><strong>Aujourd'hui :</strong> Foot Vétéran - Entraînement Technique</p>
+                        <p class="text-gray-500 text-sm">19:00 - 20:30, Stade Municipal</p>
+                        <button class="btn btn-outline btn-sm mt-3 text-xs" onclick="window.openDayDetailModal('Aujourd\'hui')">Voir détails</button>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center text-green-600 mb-3">
+                            <i data-lucide="apple" class="mr-2"></i>
+                            <h3 class="text-lg font-semibold">Prochain Repas</h3>
+                        </div>
+                        <p class="text-gray-600"><strong>Dîner :</strong> Poulet grillé, Quinoa, Légumes vapeur</p>
+                        <p class="text-gray-500 text-sm">~650 kcal, P:45g, G:70g, L:20g</p>
+                        <button class="btn btn-outline btn-sm mt-3 text-xs" onclick="window.showSection('diet'); window.showDietTab('plan');">Voir recette</button>
+                    </div>
+                    <div class="card">
+                        <div class="flex items-center text-red-600 mb-3">
+                            <i data-lucide="alert-triangle" class="mr-2"></i>
+                            <h3 class="text-lg font-semibold">Alerte Blessure</h3>
+                        </div>
+                        <p class="text-gray-600">Gêne légère au genou droit signalée.</p>
+                        <p class="text-gray-500 text-sm">Adapter l'intensité, privilégier exercices doux.</p>
+                        <button class="btn btn-outline btn-sm mt-3 text-xs" onclick="window.showSection('injuries');">Gérer blessure</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="card">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Prochains Événements</h3>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="font-medium text-gray-700">Match de Foot: Equipe A vs Equipe B</p>
+                                    <p class="text-sm text-gray-500">Dimanche prochain, 10:00</p>
+                                </div>
+                                <span class="badge badge-foot">Foot</span>
+                            </li>
+                            <li class="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p class="font-medium text-gray-700">Trail des Montagnes</p>
+                                    <p class="text-sm text-gray-500">Dans 3 semaines - 25km</p>
+                                </div>
+                                <span class="badge badge-trail">Trail</span>
+                            </li>
+                        </ul>
+                        <button class="btn btn-primary mt-4 w-full" onclick="window.showSection('events')">
+                            <i data-lucide="plus-circle" class="mr-2"></i>Ajouter/Gérer Événements
+                        </button>
+                    </div>
+                    <div class="card">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Progression Hebdomadaire</h3>
+                        <div>
+                            <p class="text-sm text-gray-600 mb-1">Volume d'entraînement: <strong>7h30 / 10h prévues</strong></p>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-3">
+                                <div class="bg-blue-600 h-2.5 rounded-full" style="width: 75%"></div>
+                            </div>
+                            <p class="text-sm text-gray-600 mb-1">Adhérence à la diète: <strong>4 jours / 7</strong></p>
+                            <div class="w-full bg-gray-200 rounded-full h-2.5">
+                                <div class="bg-green-500 h-2.5 rounded-full" style="width: 57%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="planning" class="content-section hidden">
+                <div class="header flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Planning Hebdomadaire</h1>
+                    <div class="flex items-center space-x-2">
+                        <button class="btn btn-outline p-2"><i data-lucide="chevron-left"></i></button>
+                        <span class="text-lg font-medium text-gray-700">Semaine du 26 Mai - 1 Juin</span>
+                        <button class="btn btn-outline p-2"><i data-lucide="chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <div class="calendar-grid">
+                    <div class="day-cell">
+                        <h4>Lundi 26</h4>
+                        <div class="activity-item badge-muscu"><i data-lucide="dumbbell"></i>Musculation (Full Body) - 45min</div>
+                        <div class="activity-item badge-souplesse"><i data-lucide="stretch-horizontal"></i>Souplesse - 15min</div>
+                        <p class="text-xs text-gray-500 mt-auto cursor-pointer hover:text-blue-600" onclick="window.openDayDetailModal('Lundi 26')">Voir détails diète/séance...</p>
+                    </div>
+                    <div class="day-cell">
+                        <h4>Mardi 27</h4>
+                        <div class="activity-item badge-triathlon"><i data-lucide="bike"></i>Vélo (Endurance) - 1h30</div>
+                        <div class="activity-item badge-triathlon"><i data-lucide="waves"></i>Natation (Technique) - 45min</div>
+                        <p class="text-xs text-gray-500 mt-auto cursor-pointer hover:text-blue-600" onclick="window.openDayDetailModal('Mardi 27')">Voir détails diète/séance...</p>
+                    </div>
+                    <div class="day-cell">
+                        <h4>Mercredi 28</h4>
+                        <div class="activity-item badge-foot"><i data-lucide="goal"></i>Foot Vétéran (Entraînement) - 1h30</div>
+                        <div class="activity-item badge-souplesse"><i data-lucide="stretch-horizontal"></i>Souplesse - 15min</div>
+                        <p class="text-xs text-gray-500 mt-auto cursor-pointer hover:text-blue-600" onclick="window.openDayDetailModal('Mercredi 28')">Voir détails diète/séance...</p>
+                    </div>
+                    <div class="day-cell">
+                        <h4>Jeudi 29</h4>
+                        <div class="activity-item badge-muscu"><i data-lucide="dumbbell"></i>Musculation (Haut du corps) - 45min</div>
+                        <div class="activity-item badge-triathlon"><i data-lucide="footprints"></i>Course (Fractionné) - 50min</div>
+                        <p class="text-xs text-gray-500 mt-auto cursor-pointer hover:text-blue-600" onclick="window.openDayDetailModal('Jeudi 29')">Voir détails diète/séance...</p>
+                    </div>
+                    <div class="day-cell">
+                        <h4>Vendredi 30</h4>
+                         <div class="activity-item badge-repos"><i data-lucide="bed-double"></i>Repos Actif / Souplesse</div>
+                         <p class="text-xs text-gray-500 mt-auto cursor-pointer hover:text-blue-600" onclick="window.openDayDetailModal('Vendredi 30')">Voir détails diète/séance...</p>
+                    </div>
+                    <div class="day-cell">
+                        <h4>Samedi 31</h4>
+                        <div class="activity-item badge-trail"><i data-lucide="mountain"></i>Trail (Sortie Longue) - 2h30</div>
+                        <p class="text-xs text-gray-500 mt-auto cursor-pointer hover:text-blue-600" onclick="window.openDayDetailModal('Samedi 31')">Voir détails diète/séance...</p>
+                    </div>
+                    <div class="day-cell">
+                        <h4>Dimanche 1</h4>
+                        <div class="activity-item badge-foot"><i data-lucide="shirt"></i>Match de Foot - 1h30</div>
+                        <div class="activity-item badge-souplesse"><i data-lucide="stretch-horizontal"></i>Récup & Souplesse - 20min</div>
+                        <p class="text-xs text-gray-500 mt-auto cursor-pointer hover:text-blue-600" onclick="window.openDayDetailModal('Dimanche 1')">Voir détails diète/séance...</p>
+                    </div>
+                </div>
+                 <div class="mt-6 text-center">
+                    <button class="btn btn-primary" onclick="window.openAddEventModal()">
+                        <i data-lucide="plus-circle" class="mr-2"></i> Ajouter un Événement/Match
+                    </button>
+                </div>
+            </section>
+
+            <section id="diet" class="content-section hidden">
+                 <div class="header">
+                    <h1 class="text-3xl font-bold text-gray-800">Diète & Recettes</h1>
+                </div>
+                <div class="tabs mb-6">
+                    <button class="tab-button active" onclick="window.showDietTab('plan')">Mon Plan de Diète</button>
+                    <button class="tab-button" onclick="window.showDietTab('recipes')">Mes Recettes</button>
+                    <button class="tab-button" onclick="window.showDietTab('addRecipe')">Ajouter Recette</button>
+                </div>
+
+                <div id="dietPlanTab">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Plan de Diète - Mercredi 28 Mai</h2>
+                    <div class="space-y-4">
+                        <div class="card">
+                            <h4 class="font-semibold text-lg text-blue-600">Petit Déjeuner (07:30)</h4>
+                            <p>Flocons d'avoine, fruits rouges, noix, 1 scoop de whey. (~450 kcal)</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="font-semibold text-lg text-blue-600">Collation (10:30)</h4>
+                            <p>Pomme, poignée d'amandes. (~200 kcal)</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="font-semibold text-lg text-blue-600">Déjeuner (13:00)</h4>
+                            <p>Salade composée (poulet, quinoa, légumes variés, vinaigrette légère). (~600 kcal)</p>
+                        </div>
+                         <div class="card">
+                            <h4 class="font-semibold text-lg text-blue-600">Collation Pré-Entraînement (17:30)</h4>
+                            <p>Banane, barre de céréales. (~250 kcal)</p>
+                        </div>
+                        <div class="card">
+                            <h4 class="font-semibold text-lg text-blue-600">Dîner (20:30 - Post Foot)</h4>
+                            <p>Saumon au four, patates douces rôties, brocolis. (~700 kcal)</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="recipesTab" class="hidden">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Mes Recettes</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="card">
+                            <img src="https://placehold.co/300x200/a7f3d0/14532d?text=Poulet+Quinoa" alt="Recette Poulet Quinoa" class="rounded-md mb-3">
+                            <h4 class="font-semibold text-lg">Poulet Grillé & Quinoa Gourmand</h4>
+                            <p class="text-sm text-gray-500">Préparation: 15min, Cuisson: 20min</p>
+                            <span class="badge badge-triathlon mt-2">Riche en protéines</span>
+                        </div>
+                         <div class="card">
+                            <img src="https://placehold.co/300x200/fecaca/991b1b?text=Smoothie+Energie" alt="Recette Smoothie" class="rounded-md mb-3">
+                            <h4 class="font-semibold text-lg">Smoothie Énergie Matinale</h4>
+                            <p class="text-sm text-gray-500">Préparation: 5min</p>
+                             <span class="badge badge-course mt-2">Rapide & Facile</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="addRecipeTab" class="hidden card">
+                    <h2 class="text-2xl font-semibold text-gray-700 mb-4">Ajouter une Nouvelle Recette</h2>
+                    <form class="space-y-4" onsubmit="event.preventDefault(); alert('Recette enregistrée (simulation)');">
+                        <div>
+                            <label for="recipeName" class="block text-sm font-medium text-gray-700">Nom de la recette</label>
+                            <input type="text" id="recipeName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label for="recipeIngredients" class="block text-sm font-medium text-gray-700">Ingrédients (un par ligne)</label>
+                            <textarea id="recipeIngredients" rows="4" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                        <div>
+                            <label for="recipeInstructions" class="block text-sm font-medium text-gray-700">Instructions</label>
+                            <textarea id="recipeInstructions" rows="6" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><i data-lucide="save" class="mr-2"></i>Enregistrer Recette</button>
+                    </form>
+                </div>
+            </section>
+
+            <section id="events" class="content-section hidden">
+                <div class="header flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Courses & Matchs</h1>
+                    <button class="btn btn-primary" onclick="window.openAddEventModal()">
+                        <i data-lucide="plus-circle" class="mr-2"></i>Ajouter un Événement
+                    </button>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Calendrier des Événements</h2>
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-lg border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold text-lg text-gray-800">Match de Foot: AS Vétérans vs Les Invincibles</p>
+                                <p class="text-sm text-gray-500">Date: Dimanche 1 Juin 2025, 10:00</p>
+                                <p class="text-sm text-gray-500">Lieu: Stade de la Victoire</p>
+                                <p class="text-sm text-gray-500">Type: Championnat - Important</p>
+                            </div>
+                            <span class="badge badge-foot">Match Foot</span>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold text-lg text-gray-800">Triathlon de la Côte</p>
+                                <p class="text-sm text-gray-500">Date: Samedi 28 Juin 2025, 09:00</p>
+                                <p class="text-sm text-gray-500">Format: Olympique (M)</p>
+                                <p class="text-sm text-gray-500">Objectif: Principal (A)</p>
+                            </div>
+                            <span class="badge badge-triathlon">Triathlon</span>
+                        </div>
+                         <div class="p-4 rounded-lg border border-gray-200 flex justify-between items-center">
+                            <div>
+                                <p class="font-semibold text-lg text-gray-800">Trail des Sommets</p>
+                                <p class="text-sm text-gray-500">Date: Dimanche 20 Juillet 2025, 08:00</p>
+                                <p class="text-sm text-gray-500">Distance: 42km, D+ 2200m</p>
+                                <p class="text-sm text-gray-500">Objectif: Secondaire (B)</p>
+                            </div>
+                            <span class="badge badge-trail">Trail</span>
+                        </div>
+                    </div>
+                    <p class="text-sm text-gray-500 mt-4 text-center">Utilisez le bouton "Ajouter un Événement" pour planifier. Le glisser-déposer sera disponible dans la version finale.</p>
+                </div>
+            </section>
+
+            <section id="injuries" class="content-section hidden">
+                <div class="header flex justify-between items-center">
+                    <h1 class="text-3xl font-bold text-gray-800">Suivi des Blessures</h1>
+                    <button class="btn btn-primary" onclick="window.openAddInjuryModal()">
+                        <i data-lucide="plus-circle" class="mr-2"></i>Signaler une Blessure
+                    </button>
+                </div>
+                 <div class="card">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Historique des Blessures</h2>
+                    <div class="space-y-3">
+                        <div class="p-4 rounded-lg border border-yellow-300 bg-yellow-50">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-yellow-800">Gêne au genou droit (Actif)</h4>
+                                    <p class="text-sm text-yellow-700">Signalée le: 24 Mai 2025 - Sévérité: 3/10</p>
+                                    <p class="text-sm text-yellow-700">Description: Douleur légère lors de la flexion après effort intense.</p>
+                                </div>
+                                <span class="badge bg-yellow-200 text-yellow-800">En cours</span>
+                            </div>
+                            <div class="mt-2">
+                                <h5 class="text-xs font-semibold text-yellow-700">Recommandations:</h5>
+                                <ul class="list-disc list-inside text-xs text-yellow-600">
+                                    <li>Réduire impacts (course, sauts).</li>
+                                    <li>Privilégier vélo/natation.</li>
+                                    <li>Étirements doux quadriceps/ischios.</li>
+                                    <li>Consulter si aggravation.</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p-4 rounded-lg border border-gray-200">
+                             <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-gray-700">Élongation mollet gauche (Résolu)</h4>
+                                    <p class="text-sm text-gray-500">Du 10 Avril 2025 au 25 Avril 2025</p>
+                                </div>
+                                <span class="badge bg-green-200 text-green-800">Résolu</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <section id="knowledge" class="content-section hidden">
+                <div class="header">
+                    <h1 class="text-3xl font-bold text-gray-800">Base de Connaissances</h1>
+                </div>
+                <p class="text-gray-600">Section en construction. Ici vous trouverez des informations sur :</p>
+                <ul class="list-disc list-inside text-gray-600 ml-4 mt-2">
+                    <li>Principes d'entraînement (périodisation, types de séances)</li>
+                    <li>Nutrition sportive (rôles des macronutriments, hydratation)</li>
+                    <li>Prévention et gestion des blessures courantes</li>
+                    <li>Exercices de musculation (vidéos, descriptions)</li>
+                    <li>Techniques d'étirement et de mobilité</li>
+                </ul>
+            </section>
+
+            <section id="settings" class="content-section hidden">
+                <div class="header">
+                    <h1 class="text-3xl font-bold text-gray-800">Paramètres</h1>
+                </div>
+                <div class="card">
+                    <h2 class="text-xl font-semibold text-gray-700 mb-4">Mon Profil</h2>
+                     <form class="space-y-4" onsubmit="event.preventDefault(); alert('Profil enregistré (simulation)');">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Âge</label>
+                            <input type="number" value="42" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                         <div>
+                            <label class="block text-sm font-medium text-gray-700">Poids (kg)</label>
+                            <input type="number" value="78" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Disponibilité Hebdomadaire (heures)</label>
+                            <input type="number" value="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer Modifications</button>
+                    </form>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <div id="addEventModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800">Ajouter un Événement</h2>
+                <button onclick="window.closeModal('addEventModal')" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form class="space-y-4" onsubmit="event.preventDefault(); window.closeModal('addEventModal'); alert('Événement ajouté (simulation)');">
+                <div>
+                    <label for="eventName" class="block text-sm font-medium text-gray-700">Nom de l'événement</label>
+                    <input type="text" id="eventName" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="eventType" class="block text-sm font-medium text-gray-700">Type</label>
+                    <select id="eventType" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option>Match de Foot</option>
+                        <option>Course Trail</option>
+                        <option>Triathlon</option>
+                        <option>Autre Compétition</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="eventDate" class="block text-sm font-medium text-gray-700">Date et Heure</label>
+                    <input type="datetime-local" id="eventDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="eventLocation" class="block text-sm font-medium text-gray-700">Lieu (optionnel)</label>
+                    <input type="text" id="eventLocation" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="eventImportance" class="block text-sm font-medium text-gray-700">Importance/Objectif</label>
+                    <select id="eventImportance" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option>Objectif A (Principal)</option>
+                        <option>Objectif B (Secondaire)</option>
+                        <option>Objectif C (Préparation)</option>
+                        <option>Loisir/Entraînement</option>
+                    </select>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="btn btn-outline" onclick="window.closeModal('addEventModal')">Annuler</button>
+                    <button type="submit" class="btn btn-primary"><i data-lucide="save" class="mr-2"></i>Enregistrer Événement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="dayDetailModal" class="modal hidden">
+        <div class="modal-content">
+             <div class="flex justify-between items-center mb-6">
+                <h2 id="dayDetailModalTitle" class="text-2xl font-semibold text-gray-800">Détail Journée</h2>
+                <button onclick="window.closeModal('dayDetailModal')" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="tabs mb-4">
+                <button class="tab-button active" onclick="window.showDayDetailTab('training')">Entraînement</button>
+                <button class="tab-button" onclick="window.showDayDetailTab('diet')">Diète</button>
+            </div>
+            <div id="dayDetailTrainingTab">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Entraînements Prévus</h3>
+                <div class="space-y-3">
+                    <div class="p-3 border rounded-md">
+                        <p class="font-medium"><i data-lucide="dumbbell" class="inline mr-1"></i>Musculation (Full Body)</p>
+                        <p class="text-sm text-gray-600">Durée: 45min. Objectif: Force endurance.</p>
+                        <ul class="list-disc list-inside text-xs text-gray-500 ml-4">
+                            <li>Squats: 3x12</li>
+                            <li>Fentes: 3x10 (chaque jambe)</li>
+                            <li>Pompes: 3xMax</li>
+                            <li>Tirage Horizontal: 3x12</li>
+                            <li>Gainage: 3x45sec</li>
+                        </ul>
+                        <div class="mt-2">
+                            <label for="rpe_muscu" class="text-xs">RPE (1-10):</label>
+                            <input type="number" id="rpe_muscu" min="1" max="10" class="w-16 text-xs p-1 border rounded">
+                            <button class="btn btn-primary btn-sm text-xs ml-2" onclick="alert('RPE enregistré (simulation)')">Valider Séance</button>
+                        </div>
+                    </div>
+                     <div class="p-3 border rounded-md">
+                        <p class="font-medium"><i data-lucide="stretch-horizontal" class="inline mr-1"></i>Souplesse</p>
+                        <p class="text-sm text-gray-600">Durée: 15min. Focus: Mobilité hanches et épaules.</p>
+                    </div>
+                </div>
+            </div>
+            <div id="dayDetailDietTab" class="hidden">
+                <h3 class="text-lg font-semibold text-gray-700 mb-2">Diète Prévue</h3>
+                 <div class="space-y-2 text-sm">
+                    <p><strong>Petit Déjeuner:</strong> Avoine, fruits, whey.</p>
+                    <p><strong>Collation:</strong> Amandes, pomme.</p>
+                    <p><strong>Déjeuner:</strong> Poulet, riz complet, légumes.</p>
+                    <p><strong>Collation:</strong> Yaourt grec, miel.</p>
+                    <p><strong>Dîner:</strong> Poisson blanc, quinoa, épinards.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="addInjuryModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold text-gray-800">Signaler une Blessure</h2>
+                <button onclick="window.closeModal('addInjuryModal')" class="text-gray-500 hover:text-gray-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <form class="space-y-4" onsubmit="event.preventDefault(); window.closeModal('addInjuryModal'); alert('Blessure enregistrée (simulation)');">
+                <div>
+                    <label for="injuryZone" class="block text-sm font-medium text-gray-700">Zone du corps</label>
+                    <input type="text" id="injuryZone" placeholder="Ex: Genou droit, épaule gauche..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="injuryType" class="block text-sm font-medium text-gray-700">Type de douleur/blessure</label>
+                    <input type="text" id="injuryType" placeholder="Ex: Musculaire, tendineuse, articulaire, gêne..." class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="injuryDate" class="block text-sm font-medium text-gray-700">Date d'apparition</label>
+                    <input type="date" id="injuryDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                <div>
+                    <label for="injurySeverity" class="block text-sm font-medium text-gray-700">Sévérité (1 à 10)</label>
+                    <input type="number" id="injurySeverity" min="1" max="10" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                </div>
+                 <div>
+                    <label for="injuryDescription" class="block text-sm font-medium text-gray-700">Description (circonstances, sensations)</label>
+                    <textarea id="injuryDescription" rows="3" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm"></textarea>
+                </div>
+                <div class="flex justify-end space-x-3">
+                    <button type="button" class="btn btn-outline" onclick="window.closeModal('addInjuryModal')">Annuler</button>
+                    <button type="submit" class="btn btn-primary"><i data-lucide="save" class="mr-2"></i>Enregistrer Blessure</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    </body>
+</html>
