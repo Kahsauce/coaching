@@ -19,14 +19,14 @@ from src.sport_plan import (
 
 security = HTTPBasic()
 
+docs_setting = None if os.getenv("ENV") == "prod" else "/docs"
+app = FastAPI(docs_url=docs_setting)
+
 def require_auth(credentials: HTTPBasicCredentials = Depends(security)) -> None:
     pwd = os.getenv("APP_PASSWORD")
     valid = credentials.username == "admin" and pwd and secrets.compare_digest(credentials.password, pwd)
     if not valid:
         raise HTTPException(status_code=401, detail="Unauthorized")
-
-app = FastAPI()
-
 
 @app.on_event("startup")
 def on_startup() -> None:
