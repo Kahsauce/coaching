@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 from typing import List, Optional
+from enum import Enum
 from sqlmodel import SQLModel, Field, Session, create_engine, select
 import os
 
@@ -14,10 +15,19 @@ class UserProfile(SQLModel, table=True):
     height: float
     sports: str
 
+class ActivityType(str, Enum):
+    course = "course"
+    foot = "foot"
+    trail = "trail"
+    triathlon = "triathlon"
+    muscu = "muscu"
+    repos = "repos"
+
+
 class SessionModel(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     date: date
-    activity_type: str
+    activity_type: ActivityType
     duration: int = Field(gt=0)
     rpe: int = Field(ge=1, le=10)
 

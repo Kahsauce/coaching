@@ -862,14 +862,32 @@
 <div class="p-4" id="simpleForm">
   <form id="sessionForm" class="space-y-2">
     <input type="date" id="sessDate" class="border p-1" />
-    <input type="text" id="activity" placeholder="Activité" class="border p-1" />
+    <select id="activity" class="border p-1">
+      <option value="course">Course</option>
+      <option value="foot">Foot</option>
+      <option value="muscu">Muscu</option>
+      <option value="trail">Trail</option>
+      <option value="triathlon">Triathlon</option>
+      <option value="repos">Repos</option>
+    </select>
     <input type="number" id="duration" placeholder="Durée" class="border p-1" />
     <input type="number" id="rpe" placeholder="RPE" class="border p-1" />
     <button class="btn btn-primary" type="submit">Ajouter séance</button>
   </form>
   <div id="msg" class="text-green-600 mt-2"></div>
   <button id="viewSessions" class="btn btn-secondary mt-2">Voir les séances</button>
-  <pre id="sessionsList" class="text-xs mt-2"></pre>
+  <table id="sessionsTable" class="min-w-full text-sm mt-2 hidden">
+    <thead class="bg-gray-100">
+      <tr>
+        <th class="px-2 py-1">Date</th>
+        <th class="px-2 py-1">Activité</th>
+        <th class="px-2 py-1">Durée</th>
+        <th class="px-2 py-1">RPE</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
   <div id="metrics" class="mt-4 text-sm"></div>
 </div>
 <script>
@@ -903,13 +921,35 @@ document.getElementById('sessionForm').addEventListener('submit', async e => {
     document.getElementById('msg').textContent = 'Erreur lors de l\'ajout';
   }
 });
-document.getElementById('viewSessions').addEventListener('click', async () => {
+async function loadSessions(){
   const resp = await fetch('/sessions', {headers: getAuth()});
   if(resp.ok){
     const data = await resp.json();
-    document.getElementById('sessionsList').textContent = JSON.stringify(data, null, 2);
+    const table = document.getElementById('sessionsTable');
+    const tbody = table.querySelector('tbody');
+    tbody.innerHTML = '';
+    data.forEach(s => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td class="border px-2">${s.date}</td>`+
+                     `<td class="border px-2">${s.activity_type}</td>`+
+                     `<td class="border px-2 text-right">${s.duration}</td>`+
+                     `<td class="border px-2 text-right">${s.rpe}</td>`+
+                     `<td class="border px-2 text-center"><button data-id="${s.id}" class="delete-btn text-red-600">🗑</button></td>`;
+      tbody.appendChild(tr);
+    });
+    table.classList.remove('hidden');
+  }
+}
+document.getElementById('sessionsTable').addEventListener('click', async e => {
+  if(e.target.classList.contains('delete-btn')){
+    const id = e.target.dataset.id;
+    const resp = await fetch(`/sessions/${id}`, {method:'DELETE', headers: getAuth()});
+    if(resp.ok){
+      loadSessions();
+    }
   }
 });
+document.getElementById('viewSessions').addEventListener('click', loadSessions);
 loadMetrics();
 </script>
 

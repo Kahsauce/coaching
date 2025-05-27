@@ -3,7 +3,6 @@ import secrets
 from datetime import datetime
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from sqlmodel import Session, select
 
@@ -26,11 +25,7 @@ def require_auth(credentials: HTTPBasicCredentials = Depends(security)) -> None:
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory=".", html=True), name="static")
 
-@app.get("/")
-def read_index() -> FileResponse:
-    return FileResponse("index.html")
 
 @app.on_event("startup")
 def on_startup() -> None:
@@ -75,3 +70,17 @@ def get_metrics(date: str) -> dict:
     chronic = compute_chronic_load(sessions, today)
     acwr = compute_acwr(sessions, today)
     return {"acute": acute, "chronic": chronic, "acwr": acwr}
+
+
+@app.delete("/sessions/{session_id}")
+def delete_session(session_id: int, _: HTTPBasicCredentials = Depends(require_auth)) -> dict:
+    with Session(engine) as session:
+        obj = session.get(SessionModel, session_id)
+        if not obj:
+            raise HTTPException(status_code=404, detail="Session not found")
+        session.delete(obj)
+        session.commit()
+    return {"status": "deleted"}
+
+
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
